@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Slf4j
 public class FilmReleaseDateValidator extends FilmAbstractValidator implements FilmValidator {
 
-    private final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
+    public static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
 
     @Override
     protected void performValidation(Film film) throws ValidationException {

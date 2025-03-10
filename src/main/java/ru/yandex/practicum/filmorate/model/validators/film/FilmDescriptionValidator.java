@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
 @Slf4j
 public class FilmDescriptionValidator extends FilmAbstractValidator implements FilmValidator {
 
-    private final int MAX_DESCRIPTION_LENGTH = 200;
+    public static final int MAX_DESCRIPTION_LENGTH = 200;
 
     @Override
     protected void performValidation(Film film) throws ValidationException {
