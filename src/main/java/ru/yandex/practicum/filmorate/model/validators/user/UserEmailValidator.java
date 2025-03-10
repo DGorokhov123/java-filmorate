@@ -9,12 +9,12 @@ import java.util.regex.Pattern;
 @Slf4j
 public class UserEmailValidator extends UserAbstractValidator implements UserValidator {
 
-    private final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    public static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
     @Override
     protected void performValidation(User user) throws ValidationException {
 
-        if ( user.getEmail() == null || !EMAIL_PATTERN.matcher(user.getEmail()).matches() ) {
+        if (user.getEmail() == null || !EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
             String reason = "User email doesn't match email mask";
             log.debug("FAILED: {} for {}", reason, user);
             throw new ValidationException(getClass().getSimpleName() + ": " + reason, user);

@@ -11,13 +11,13 @@ public class UserLoginValidator extends UserAbstractValidator implements UserVal
     protected void performValidation(User user) throws ValidationException {
         String login = user.getLogin();
 
-        if ( login == null || login.isBlank() ) {
+        if (login == null || login.isBlank()) {
             String reason = "User login shouldn't be empty";
             log.debug("FAILED: {} for {}", reason, user);
             throw new ValidationException(getClass().getSimpleName() + ": " + reason, user);
         }
 
-        if ( login.indexOf(' ') >= 0 || login.indexOf('\t') >= 0 ) {
+        if (login.indexOf(' ') >= 0 || login.indexOf('\t') >= 0) {
             String reason = "User login shouldn't contain spaces or tabs";
             log.debug("FAILED: {} for {}", reason, user);
             throw new ValidationException(getClass().getSimpleName() + ": " + reason, user);
