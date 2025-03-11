@@ -17,14 +17,14 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
 
-    FilmValidator filmValidator = FilmValidatorBuilder.builder()
+    private final FilmValidator filmValidator = FilmValidatorBuilder.builder()
             .register(new FilmNameValidator())
             .register(new FilmDescriptionValidator())
             .register(new FilmReleaseDateValidator())
             .register(new FilmDurationValidator())
             .build();
 
-    Map<Long, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
 
     @GetMapping
     public Collection<Film> getFilms() {

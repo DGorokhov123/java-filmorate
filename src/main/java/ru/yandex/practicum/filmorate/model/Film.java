@@ -14,16 +14,16 @@ import java.time.LocalDate;
 @Data
 public class Film {
 
-    long id;
+    private Long id;
 
     @NotBlank(message = "@Valid: Film name shouldn't be blank")
-    String name;
+    private String name;
 
-    String description;
+    private String description;
 
-    LocalDate releaseDate;
+    private LocalDate releaseDate;
 
     @JsonSerialize(using = DurationSerializer.class)
-    Duration duration;
+    private Duration duration;
 
 }

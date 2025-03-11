@@ -24,7 +24,7 @@ class UserValidatorTest {
     @BeforeEach
     void init() {
         user = new User();
-        user.setId(3);
+        user.setId(3L);
         user.setEmail("ivan@ya.ru");
         user.setLogin("ivandur");
         user.setName("Ivan Durak");

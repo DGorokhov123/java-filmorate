@@ -26,7 +26,7 @@ class FilmValidatorTest {
     @BeforeEach
     void init() {
         film = new Film();
-        film.setId(3);
+        film.setId(3L);
         film.setName("Inception");
         film.setDescription("A thief enters dreams to steal secrets, facing blurred lines between reality and illusion.");
         film.setReleaseDate(LocalDate.of(2010, 7, 8));

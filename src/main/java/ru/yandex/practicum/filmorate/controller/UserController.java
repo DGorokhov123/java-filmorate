@@ -17,14 +17,14 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
 
-    UserValidator userValidator = UserValidatorBuilder.builder()
+    private final UserValidator userValidator = UserValidatorBuilder.builder()
             .register(new UserEmailValidator())
             .register(new UserLoginValidator())
             .register(new UserNameValidator())
             .register(new UserBirthdayValidator())
             .build();
 
-    Map<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
 
     @GetMapping
     public Collection<User> getUsers() {

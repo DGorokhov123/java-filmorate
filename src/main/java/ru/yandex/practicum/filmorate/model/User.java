@@ -9,16 +9,16 @@ import java.time.LocalDate;
 @Data
 public class User {
 
-    long id;
+    private Long id;
 
     @Email(message = "@Valid: User Email doesn't match email mask")
-    String email;
+    private String email;
 
     @NotBlank(message = "@Valid: User login shouldn't be blank")
-    String login;
+    private String login;
 
-    String name;
+    private String name;
 
-    LocalDate birthday;
+    private LocalDate birthday;
 
 }
