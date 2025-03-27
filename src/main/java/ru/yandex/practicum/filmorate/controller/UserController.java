@@ -1,67 +1,74 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
-import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.validators.user.*;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    private final UserValidator userValidator = UserValidatorBuilder.builder()
-            .register(new UserEmailValidator())
-            .register(new UserLoginValidator())
-            .register(new UserNameValidator())
-            .register(new UserBirthdayValidator())
-            .build();
+    private final UserService userService;
 
-    private final Map<Long, User> users = new HashMap<>();
+
+    // STORAGE OPERATIONS
+
 
     @GetMapping
     public Collection<User> getUsers() {
-        return users.values();
+        return userService.getUsers();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) throws NotFoundException {
-        User user = users.get(id);
-        if (user == null) throw new NotFoundException("User not found", id);
-        return user;
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public User deleteUserById(@PathVariable Long id) {
+        return userService.deleteUserById(id);
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody User user) throws ValidationException {
-        userValidator.validate(user);
-        user.setId(getNextId());
-        users.put(user.getId(), user);
-        log.info("Added user {}", user);
-        return user;
+    public User createUser(@Valid @RequestBody User user) {
+        return userService.createUser(user);
     }
 
     @PutMapping
-    public User updateUser(@Valid @RequestBody User user) throws ValidationException, NotFoundException {
-        userValidator.validate(user);
-        User oldUser = users.get(user.getId());
-        if (oldUser == null) throw new NotFoundException("User not found", user);
-        oldUser.setEmail(user.getEmail());
-        oldUser.setLogin(user.getLogin());
-        oldUser.setName(user.getName());
-        oldUser.setBirthday(user.getBirthday());
-        log.info("Updated user {}", oldUser);
-        return oldUser;
+    public User updateUser(@Valid @RequestBody User user) {
+        return userService.updateUser(user);
     }
 
-    private Long getNextId() {
-        return users.keySet().stream().mapToLong(id -> id).max().orElse(0) + 1;
+
+    // FRIENDS OPERATIONS
+
+
+    @PutMapping("/{userId}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        userService.addFriend(userId, friendId);
+    }
+
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        userService.removeFriend(userId, friendId);
+    }
+
+    @GetMapping("/{userId}/friends")
+    public Collection<User> findFriends(@PathVariable Long userId) {
+        return userService.findFriends(userId);
+    }
+
+    @GetMapping("/{userId}/friends/common/{otherId}")
+    public Collection<User> findMutualFriends(@PathVariable Long userId, @PathVariable Long otherId) {
+        return userService.findMutualFriends(userId, otherId);
     }
 
 }
