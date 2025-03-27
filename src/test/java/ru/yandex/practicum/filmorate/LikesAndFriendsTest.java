@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +17,7 @@ class LikesAndFriendsTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    void LikesAndFriends() {
+    void likesAndFriends() {
         jsonPost("/users", "{\"email\":\"oleg@ya.ru\",\"login\":\"olezhe\",\"name\":\"olen oleg\",\"birthday\":\"2003-06-21\"}");
         jsonPost("/users", "{\"email\":\"ivan@ya.ru\",\"login\":\"vanya\",\"name\":\"ivan durak\",\"birthday\":\"2003-06-21\"}");
         jsonPost("/users", "{\"email\":\"anna@ya.ru\",\"login\":\"anka\",\"name\":\"anna pulemet\",\"birthday\":\"2003-06-21\"}");
@@ -56,24 +55,24 @@ class LikesAndFriendsTest {
         // BAD FRIENDS
 
         String[][] puts = {
-                {"/users/1/friends/9", "404"},
-                {"/users/9/friends/1", "404"},
-                {"/users/f/friends/1", "400"},
-                {"/users/1/friends/g", "400"}
+                new String[]{"/users/1/friends/9", "404"},
+                new String[]{"/users/9/friends/1", "404"},
+                new String[]{"/users/f/friends/1", "400"},
+                new String[]{"/users/1/friends/g", "400"}
         };
         for (int i = 0; i < puts.length; i++) assertEquals(puts[i][1], simplePut(puts[i][0]));
 
         String[][] dels = {
-                {"/users/1/friends/9", "404"},
-                {"/users/9/friends/1", "404"},
-                {"/users/f/friends/1", "400"},
-                {"/users/1/friends/g", "400"}
+                new String[]{"/users/1/friends/9", "404"},
+                new String[]{"/users/9/friends/1", "404"},
+                new String[]{"/users/f/friends/1", "400"},
+                new String[]{"/users/1/friends/g", "400"}
         };
         for (int i = 0; i < puts.length; i++) assertEquals(dels[i][1], simpleDelete(dels[i][0]));
 
         String[][] gets = {
-                {"/users/9/friends", "NOT_FOUND"},
-                {"/users/f/friends", "Illegal"}
+                new String[]{"/users/9/friends", "NOT_FOUND"},
+                new String[]{"/users/f/friends", "Illegal"}
         };
         for (int i = 0; i < gets.length; i++) {
             String ans = simpleGet(gets[i][0]);
@@ -114,23 +113,23 @@ class LikesAndFriendsTest {
         // BAD LIKES
 
         puts = new String[][]{
-                {"/films/1/like/9", "404"},
-                {"/films/9/like/1", "404"},
-                {"/films/1/like/f", "400"},
-                {"/films/f/like/1", "400"}
+                new String[]{"/films/1/like/9", "404"},
+                new String[]{"/films/9/like/1", "404"},
+                new String[]{"/films/1/like/f", "400"},
+                new String[]{"/films/f/like/1", "400"}
         };
         for (int i = 0; i < puts.length; i++) assertEquals(puts[i][1], simplePut(puts[i][0]));
 
         dels = new String[][]{
-                {"/films/1/like/9", "404"},
-                {"/films/9/like/1", "404"},
-                {"/films/1/like/f", "400"},
-                {"/films/f/like/1", "400"}
+                new String[]{"/films/1/like/9", "404"},
+                new String[]{"/films/9/like/1", "404"},
+                new String[]{"/films/1/like/f", "400"},
+                new String[]{"/films/f/like/1", "400"}
         };
         for (int i = 0; i < puts.length; i++) assertEquals(dels[i][1], simpleDelete(dels[i][0]));
 
         gets = new String[][]{
-                {"/films/popular?count=-2", "Illegal"}
+                new String[]{"/films/popular?count=-2", "Illegal"}
         };
         for (int i = 0; i < gets.length; i++) {
             ans = simpleGet(gets[i][0]);
