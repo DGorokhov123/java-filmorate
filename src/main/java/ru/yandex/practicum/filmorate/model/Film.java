@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.controller.serializers.DurationSerializer;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
@@ -25,5 +27,7 @@ public class Film {
 
     @JsonSerialize(using = DurationSerializer.class)
     private Duration duration;
+
+    private final Set<Long> likes = new HashSet<>();
 
 }
