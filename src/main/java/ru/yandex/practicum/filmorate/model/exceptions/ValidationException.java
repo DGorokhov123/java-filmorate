@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.model.exceptions;
 
 import lombok.Getter;
 
-public class ValidationException extends Exception {
+public class ValidationException extends RuntimeException {
 
     @Getter
     Object object;
