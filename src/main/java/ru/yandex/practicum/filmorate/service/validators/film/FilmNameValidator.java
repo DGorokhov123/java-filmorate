@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.validators.film;
+package ru.yandex.practicum.filmorate.service.validators.film;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
 public class FilmNameValidator extends FilmAbstractValidator implements FilmValidator {
 
     @Override
-    protected void performValidation(Film film) throws ValidationException {
+    protected void performValidation(Film film) {
         String name = film.getName();
 
         if (name == null || name.isBlank()) {
@@ -17,7 +17,7 @@ public class FilmNameValidator extends FilmAbstractValidator implements FilmVali
             throw new ValidationException(getClass().getSimpleName() + ": " + reason, film);
         }
 
-        log.debug("PASSED");
+        log.trace("PASSED");
 
     }
 

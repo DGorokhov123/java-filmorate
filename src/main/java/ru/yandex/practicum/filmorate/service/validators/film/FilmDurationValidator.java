@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.validators.film;
+package ru.yandex.practicum.filmorate.service.validators.film;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -10,7 +10,7 @@ import java.time.Duration;
 public class FilmDurationValidator extends FilmAbstractValidator implements FilmValidator {
 
     @Override
-    protected void performValidation(Film film) throws ValidationException {
+    protected void performValidation(Film film) {
 
         Duration duration = film.getDuration();
 
@@ -20,7 +20,7 @@ public class FilmDurationValidator extends FilmAbstractValidator implements Film
             throw new ValidationException(getClass().getSimpleName() + ": " + reason, film);
         }
 
-        log.debug("PASSED");
+        log.trace("PASSED");
 
     }
 

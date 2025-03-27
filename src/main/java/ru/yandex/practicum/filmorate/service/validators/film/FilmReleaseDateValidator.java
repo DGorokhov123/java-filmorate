@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.validators.film;
+package ru.yandex.practicum.filmorate.service.validators.film;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,7 +12,7 @@ public class FilmReleaseDateValidator extends FilmAbstractValidator implements F
     public static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
 
     @Override
-    protected void performValidation(Film film) throws ValidationException {
+    protected void performValidation(Film film) {
 
         LocalDate date = film.getReleaseDate();
 
@@ -22,7 +22,7 @@ public class FilmReleaseDateValidator extends FilmAbstractValidator implements F
             throw new ValidationException(getClass().getSimpleName() + ": " + reason, film);
         }
 
-        log.debug("PASSED");
+        log.trace("PASSED");
 
     }
 

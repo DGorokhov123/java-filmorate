@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.model.validators.film.*;
+import ru.yandex.practicum.filmorate.service.validators.film.*;
 
 import java.time.Duration;
 import java.time.LocalDate;

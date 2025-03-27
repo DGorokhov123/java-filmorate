@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.validators.user;
+package ru.yandex.practicum.filmorate.service.validators.user;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.User;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class UserBirthdayValidator extends UserAbstractValidator implements UserValidator {
 
     @Override
-    protected void performValidation(User user) throws ValidationException {
+    protected void performValidation(User user) {
 
         if (user.getBirthday() != null && user.getBirthday().isAfter(LocalDate.now())) {
             String reason = "User birthday shouldn't be in future";
@@ -18,7 +18,7 @@ public class UserBirthdayValidator extends UserAbstractValidator implements User
             throw new ValidationException(getClass().getSimpleName() + ": " + reason, user);
         }
 
-        log.debug("PASSED");
+        log.trace("PASSED");
 
     }
 
