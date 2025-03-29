@@ -36,10 +36,12 @@ public class FilmService {
     }
 
     public Film getFilmById(Long id) {
+        if (id == null) throw new IllegalArgumentException("Film id shouldn't be null");
         return filmStorage.getFilmById(id);
     }
 
     public Film deleteFilmById(Long id) {
+        if (id == null) throw new IllegalArgumentException("Film id shouldn't be null");
         Film film = filmStorage.deleteFilmById(id);
         log.debug("Deleted film {}", film);
         return film;

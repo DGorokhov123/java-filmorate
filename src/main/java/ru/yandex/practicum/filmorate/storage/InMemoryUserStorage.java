@@ -20,7 +20,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User getUserById(Long id) {
-        if (id == null) throw new IllegalArgumentException("User id shouldn't be null");
         User user = users.get(id);
         if (user == null) throw new NotFoundException("User not found", id);
         return user;
@@ -28,7 +27,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User deleteUserById(Long id) {
-        if (id == null) throw new IllegalArgumentException("User id shouldn't be null");
         User user = users.get(id);
         if (user == null) throw new NotFoundException("User not found", id);
         users.remove(id);

@@ -35,10 +35,12 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
+        if (id == null) throw new IllegalArgumentException("User id shouldn't be null");
         return userStorage.getUserById(id);
     }
 
     public User deleteUserById(Long id) {
+        if (id == null) throw new IllegalArgumentException("User id shouldn't be null");
         User user = userStorage.deleteUserById(id);
         log.debug("Deleted user {}", user);
         return user;

@@ -20,7 +20,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film getFilmById(Long id) {
-        if (id == null) throw new IllegalArgumentException("Film id shouldn't be null");
         Film film = films.get(id);
         if (film == null) throw new NotFoundException("Film not found", id);
         return film;
@@ -28,7 +27,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film deleteFilmById(Long id) {
-        if (id == null) throw new IllegalArgumentException("Film id shouldn't be null");
         Film film = films.get(id);
         if (film == null) throw new NotFoundException("Film not found", id);
         films.remove(id);
