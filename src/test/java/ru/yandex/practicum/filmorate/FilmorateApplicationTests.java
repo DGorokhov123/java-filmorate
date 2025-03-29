@@ -102,7 +102,7 @@ class FilmorateApplicationTests {
                 new String[]{"200", "sofochka"});
         // Normal json (with wrong id + without id)
         putJsons.put("{\"email\":\"oleg@ya.ru\",\"login\":\"olezhe\",\"name\":\"olen oleg\",\"birthday\":\"2003-06-21\"}",
-                new String[]{"400", "Argument"});
+                new String[]{"400", "UserIdValidator"});
         putJsons.put("{\"id\":1045,\"email\":\"otto@ya.ru\",\"login\":\"bismark\",\"name\":\"otto bismark\",\"birthday\":\"1815-04-01\"}",
                 new String[]{"404", "not found"});
         // Normal json with id
@@ -270,7 +270,7 @@ class FilmorateApplicationTests {
         putJsons.put("{\"id\":9,\"name\":\"Terminator\",\"description\":\"no fate\",\"releaseDate\":\"1984-10-26\",\"duration\":\"PT1H48M\"}",
                 new String[]{"404", "not found"});
         putJsons.put("{\"name\":\"Anora\",\"description\":\"has oscar\",\"releaseDate\":\"2024-05-21\",\"duration\":\"PT2H19M\"}",
-                new String[]{"400", "Illegal Argument"});
+                new String[]{"400", "FilmIdValidator"});
         // Normal json with id
         putJsons.put("{\"id\":1,\"name\":\"Inception\",\"description\":\"leonardo\",\"releaseDate\":\"2010-07-08\",\"duration\":\"PT2H28M\"}",
                 new String[]{"200", "Inception"});

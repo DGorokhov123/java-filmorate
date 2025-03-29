@@ -35,7 +35,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film createFilm(Film film) {
-        if (film == null) throw new IllegalArgumentException("Film shouldn't be null");
         film.setId(getNextId());
         films.put(film.getId(), film);
         return film;
@@ -43,8 +42,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
-        if (film == null) throw new IllegalArgumentException("Film shouldn't be null");
-        if (film.getId() == null) throw new IllegalArgumentException("Film id shouldn't be null");
         Film oldFilm = films.get(film.getId());
         if (oldFilm == null) throw new NotFoundException("Film not found", film);
         oldFilm.setName(film.getName());

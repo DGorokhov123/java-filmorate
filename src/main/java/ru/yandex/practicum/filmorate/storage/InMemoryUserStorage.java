@@ -35,7 +35,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User createUser(User user) {
-        if (user == null) throw new IllegalArgumentException("User shouldn't be null");
         user.setId(getNextId());
         users.put(user.getId(), user);
         return user;
@@ -43,8 +42,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        if (user == null) throw new IllegalArgumentException("User shouldn't be null");
-        if (user.getId() == null) throw new IllegalArgumentException("User id shouldn't be null");
         User oldUser = users.get(user.getId());
         if (oldUser == null) throw new NotFoundException("User not found", user);
         oldUser.setEmail(user.getEmail());

@@ -17,7 +17,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmService {
 
-    private final FilmValidator filmValidator = FilmValidatorBuilder.builder()
+    private final FilmValidator filmCreateValidator = FilmValidatorBuilder.builder()
+            .register(new FilmNullValidator())
+            .register(new FilmNameValidator())
+            .register(new FilmDescriptionValidator())
+            .register(new FilmReleaseDateValidator())
+            .register(new FilmDurationValidator())
+            .build();
+
+    private final FilmValidator filmUpdateValidator = FilmValidatorBuilder.builder()
+            .register(new FilmNullValidator())
+            .register(new FilmIdValidator())
             .register(new FilmNameValidator())
             .register(new FilmDescriptionValidator())
             .register(new FilmReleaseDateValidator())
@@ -48,14 +58,14 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        filmValidator.validate(film);
+        filmCreateValidator.validate(film);
         Film newFilm = filmStorage.createFilm(film);
         log.debug("Created film {}", newFilm);
         return newFilm;
     }
 
     public Film updateFilm(Film film) {
-        filmValidator.validate(film);
+        filmUpdateValidator.validate(film);
         Film newFilm = filmStorage.updateFilm(film);
         log.debug("Updated film {}", newFilm);
         return newFilm;

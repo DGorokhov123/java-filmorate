@@ -17,7 +17,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserValidator userValidator = UserValidatorBuilder.builder()
+    private final UserValidator userCreateValidator = UserValidatorBuilder.builder()
+            .register(new UserNullValidator())
+            .register(new UserEmailValidator())
+            .register(new UserLoginValidator())
+            .register(new UserNameValidator())
+            .register(new UserBirthdayValidator())
+            .build();
+
+    private final UserValidator userUpdateValidator = UserValidatorBuilder.builder()
+            .register(new UserNullValidator())
+            .register(new UserIdValidator())
             .register(new UserEmailValidator())
             .register(new UserLoginValidator())
             .register(new UserNameValidator())
@@ -47,14 +57,14 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        userValidator.validate(user);
+        userCreateValidator.validate(user);
         User newUser = userStorage.createUser(user);
         log.debug("Created user {}", newUser);
         return newUser;
     }
 
     public User updateUser(User user) {
-        userValidator.validate(user);
+        userUpdateValidator.validate(user);
         User newUser = userStorage.updateUser(user);
         log.debug("Updated user {}", newUser);
         return newUser;
