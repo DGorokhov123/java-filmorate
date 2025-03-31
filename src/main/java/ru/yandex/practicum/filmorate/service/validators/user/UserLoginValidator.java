@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.validators.user;
+package ru.yandex.practicum.filmorate.service.validators.user;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.User;
@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
 public class UserLoginValidator extends UserAbstractValidator implements UserValidator {
 
     @Override
-    protected void performValidation(User user) throws ValidationException {
+    protected void performValidation(User user) {
         String login = user.getLogin();
 
         if (login == null || login.isBlank()) {
@@ -23,7 +23,7 @@ public class UserLoginValidator extends UserAbstractValidator implements UserVal
             throw new ValidationException(getClass().getSimpleName() + ": " + reason, user);
         }
 
-        log.debug("PASSED");
+        log.trace("PASSED");
 
     }
 

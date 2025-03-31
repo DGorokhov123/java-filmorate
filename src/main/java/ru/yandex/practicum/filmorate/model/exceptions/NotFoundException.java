@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.model.exceptions;
 
 import lombok.Getter;
 
-public class NotFoundException extends Exception {
+public class NotFoundException extends RuntimeException {
 
     @Getter
     Object object;

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.validators.user;
+package ru.yandex.practicum.filmorate.service.validators.user;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.User;
@@ -12,7 +12,7 @@ public class UserEmailValidator extends UserAbstractValidator implements UserVal
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
     @Override
-    protected void performValidation(User user) throws ValidationException {
+    protected void performValidation(User user) {
 
         if (user.getEmail() == null || !EMAIL_PATTERN.matcher(user.getEmail()).matches()) {
             String reason = "User email doesn't match email mask";
@@ -20,7 +20,7 @@ public class UserEmailValidator extends UserAbstractValidator implements UserVal
             throw new ValidationException(getClass().getSimpleName() + ": " + reason, user);
         }
 
-        log.debug("PASSED");
+        log.trace("PASSED");
 
     }
 

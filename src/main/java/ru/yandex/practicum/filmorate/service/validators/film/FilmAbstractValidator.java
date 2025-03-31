@@ -1,7 +1,6 @@
-package ru.yandex.practicum.filmorate.model.validators.film;
+package ru.yandex.practicum.filmorate.service.validators.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
 
 public abstract class FilmAbstractValidator implements FilmValidator {
 
@@ -13,11 +12,11 @@ public abstract class FilmAbstractValidator implements FilmValidator {
     }
 
     @Override
-    public void validate(Film film) throws ValidationException {
+    public void validate(Film film) {
         performValidation(film);
         if (next != null) next.validate(film);
     }
 
-    protected abstract void performValidation(Film film) throws ValidationException;
+    protected abstract void performValidation(Film film);
 
 }

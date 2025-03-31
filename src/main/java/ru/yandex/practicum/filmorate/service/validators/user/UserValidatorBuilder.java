@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.validators.user;
+package ru.yandex.practicum.filmorate.service.validators.user;
 
 public class UserValidatorBuilder {
 

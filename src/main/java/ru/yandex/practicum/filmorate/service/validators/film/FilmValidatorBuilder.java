@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.model.validators.film;
+package ru.yandex.practicum.filmorate.service.validators.film;
 
 public class FilmValidatorBuilder {
 

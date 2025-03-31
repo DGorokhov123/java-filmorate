@@ -1,7 +1,6 @@
-package ru.yandex.practicum.filmorate.model.validators.user;
+package ru.yandex.practicum.filmorate.service.validators.user;
 
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
 
 public abstract class UserAbstractValidator implements UserValidator {
 
@@ -13,11 +12,11 @@ public abstract class UserAbstractValidator implements UserValidator {
     }
 
     @Override
-    public void validate(User user) throws ValidationException {
+    public void validate(User user) {
         performValidation(user);
         if (next != null) next.validate(user);
     }
 
-    protected abstract void performValidation(User user) throws ValidationException;
+    protected abstract void performValidation(User user);
 
 }

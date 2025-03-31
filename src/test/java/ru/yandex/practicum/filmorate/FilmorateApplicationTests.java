@@ -5,12 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FilmorateApplicationTests {
 
@@ -31,10 +35,10 @@ class FilmorateApplicationTests {
 
         // ###### POST ######
 
-        Map<String, String[]> postJsons = new HashMap<>();
+        Map<String, String[]> postJsons = new LinkedHashMap<>();
         // Bad jsons
-        postJsons.put("", new String[]{"400", "Bad Request"});
-        postJsons.put("hrtfhyrth", new String[]{"400", "Bad Request"});
+        postJsons.put("", new String[]{"400", "Illegal Argument"});
+        postJsons.put("hrtfhyrth", new String[]{"400", "Illegal Argument"});
         postJsons.put("{}", new String[]{"400", "@Valid"});
         postJsons.put("{\"king\":\"sauron\"}", new String[]{"400", "@Valid"});
         // Empty email + bad email
@@ -72,33 +76,33 @@ class FilmorateApplicationTests {
 
         // ###### PUT ######
 
-        Map<String, String[]> putJsons = new HashMap<>();
+        Map<String, String[]> putJsons = new LinkedHashMap<>();
         // Bad jsons
-        putJsons.put("", new String[]{"400", "Bad Request"});
-        putJsons.put("hrtfhyrth", new String[]{"400", "Bad Request"});
+        putJsons.put("", new String[]{"400", "Illegal Argument"});
+        putJsons.put("hrtfhyrth", new String[]{"400", "Illegal Argument"});
         putJsons.put("{}", new String[]{"400", "@Valid"});
         putJsons.put("{\"king\":\"sauron\"}", new String[]{"400", "@Valid"});
         // Empty email + bad email
-        putJsons.put("{\"email\":\"ivanya.ru\",\"login\":\"ivandur\",\"name\":\"ivan durak\",\"birthday\":\"2000-02-24\"}",
+        putJsons.put("{\"id\":1,\"email\":\"ivanya.ru\",\"login\":\"ivandur\",\"name\":\"ivan durak\",\"birthday\":\"2000-02-24\"}",
                 new String[]{"400", "@Valid"});
-        putJsons.put("{\"email\":\"\",\"login\":\"ivandur\",\"name\":\"ivan durak\",\"birthday\":\"2000-02-24\"}",
+        putJsons.put("{\"id\":1,\"email\":\"\",\"login\":\"ivandur\",\"name\":\"ivan durak\",\"birthday\":\"2000-02-24\"}",
                 new String[]{"400", "UserEmailValidator"});
         // Empty login + login with spaces
-        putJsons.put("{\"email\":\"ivan@ya.ru\",\"login\":\"\",\"name\":\"ivan durak\",\"birthday\":\"2000-02-24\"}",
+        putJsons.put("{\"id\":1,\"email\":\"ivan@ya.ru\",\"login\":\"\",\"name\":\"ivan durak\",\"birthday\":\"2000-02-24\"}",
                 new String[]{"400", "@Valid"});
-        putJsons.put("{\"email\":\"ivan@ya.ru\",\"login\":\"iva ndur\",\"name\":\"ivan durak\",\"birthday\":\"2000-02-24\"}",
+        putJsons.put("{\"id\":1,\"email\":\"ivan@ya.ru\",\"login\":\"iva ndur\",\"name\":\"ivan durak\",\"birthday\":\"2000-02-24\"}",
                 new String[]{"400", "UserLoginValidator"});
         // Birthday from future
-        putJsons.put("{\"email\":\"ivan@ya.ru\",\"login\":\"ivandur\",\"name\":\"ivan durak\",\"birthday\":\"2040-02-24\"}",
+        putJsons.put("{\"id\":1,\"email\":\"ivan@ya.ru\",\"login\":\"ivandur\",\"name\":\"ivan durak\",\"birthday\":\"2040-02-24\"}",
                 new String[]{"400", "UserBirthdayValidator"});
         // Empty name + without name
-        putJsons.put("{\"email\":\"ivan@ya.ru\",\"login\":\"ivandur\",\"name\":\"\",\"birthday\":\"2000-02-24\"}",
-                new String[]{"404", "not found"});
-        putJsons.put("{\"email\":\"sofi@ya.ru\",\"login\":\"sofochka\",\"birthday\":\"2001-04-14\"}",
-                new String[]{"404", "not found"});
+        putJsons.put("{\"id\":1,\"email\":\"ivan@ya.ru\",\"login\":\"ivandur\",\"name\":\"\",\"birthday\":\"2000-02-24\"}",
+                new String[]{"200", "ivandur"});
+        putJsons.put("{\"id\":1,\"email\":\"sofi@ya.ru\",\"login\":\"sofochka\",\"birthday\":\"2001-04-14\"}",
+                new String[]{"200", "sofochka"});
         // Normal json (with wrong id + without id)
         putJsons.put("{\"email\":\"oleg@ya.ru\",\"login\":\"olezhe\",\"name\":\"olen oleg\",\"birthday\":\"2003-06-21\"}",
-                new String[]{"404", "not found"});
+                new String[]{"400", "UserIdValidator"});
         putJsons.put("{\"id\":1045,\"email\":\"otto@ya.ru\",\"login\":\"bismark\",\"name\":\"otto bismark\",\"birthday\":\"1815-04-01\"}",
                 new String[]{"404", "not found"});
         // Normal json with id
@@ -129,9 +133,9 @@ class FilmorateApplicationTests {
 
         // ###### GET BY ID ######
 
-        Map<String, String[]> getUrls = new HashMap<>();
+        Map<String, String[]> getUrls = new LinkedHashMap<>();
         // Bad id
-        getUrls.put("/users/f", new String[]{"400", "Bad Request"});
+        getUrls.put("/users/f", new String[]{"400", "Illegal Argument"});
         // Non-existing id
         getUrls.put("/users/-1", new String[]{"404", "not found"});
         getUrls.put("/users/0", new String[]{"404", "not found"});
@@ -150,6 +154,35 @@ class FilmorateApplicationTests {
             assertNotNull(body);
             assertTrue(body.contains(entry.getValue()[1]));
         }
+
+        // ###### DELETE BY ID ######
+
+        List<String[]> deleteUrls = new ArrayList<>();
+        // Bad id
+        deleteUrls.add(new String[]{"/users/f", "400", "Illegal Argument"});
+        // Non-existing id
+        deleteUrls.add(new String[]{"/users/-1", "404", "not found"});
+        deleteUrls.add(new String[]{"/users/0", "404", "not found"});
+        deleteUrls.add(new String[]{"/users/10", "404", "not found"});
+        // Existing id
+        deleteUrls.add(new String[]{"/users/1", "200", "djbobo"});
+        deleteUrls.add(new String[]{"/users/2", "200", "sofochka"});
+        deleteUrls.add(new String[]{"/users/3", "200", "olezhe"});
+        deleteUrls.add(new String[]{"/users/4", "200", "bismark"});
+        // Deleted id
+        deleteUrls.add(new String[]{"/users/1", "404", "not found"});
+        deleteUrls.add(new String[]{"/users/2", "404", "not found"});
+        deleteUrls.add(new String[]{"/users/3", "404", "not found"});
+        deleteUrls.add(new String[]{"/users/4", "404", "not found"});
+
+        request = new HttpEntity<>("", headers);
+        for (String[] url : deleteUrls) {
+            response = restTemplate.exchange(url[0], HttpMethod.DELETE, request, String.class);
+            assertEquals(url[1], String.valueOf(response.getStatusCode().value()));
+            body = response.getBody();
+            assertNotNull(body);
+            assertTrue(body.contains(url[2]));
+        }
     }
 
 
@@ -166,10 +199,10 @@ class FilmorateApplicationTests {
 
         // ###### POST ######
 
-        Map<String, String[]> postJsons = new HashMap<>();
+        Map<String, String[]> postJsons = new LinkedHashMap<>();
         // Bad jsons
-        postJsons.put("", new String[]{"400", "Bad Request"});
-        postJsons.put("hrtfhyrth", new String[]{"400", "Bad Request"});
+        postJsons.put("", new String[]{"400", "Illegal Argument"});
+        postJsons.put("hrtfhyrth", new String[]{"400", "Illegal Argument"});
         postJsons.put("{}", new String[]{"400", "@Valid"});
         postJsons.put("{\"king\":\"sauron\"}", new String[]{"400", "@Valid"});
         // Empty name + blank name
@@ -208,10 +241,10 @@ class FilmorateApplicationTests {
 
         // ###### PUT ######
 
-        Map<String, String[]> putJsons = new HashMap<>();
+        Map<String, String[]> putJsons = new LinkedHashMap<>();
         // Bad jsons
-        putJsons.put("", new String[]{"400", "Bad Request"});
-        putJsons.put("hrtfhyrth", new String[]{"400", "Bad Request"});
+        putJsons.put("", new String[]{"400", "Illegal Argument"});
+        putJsons.put("hrtfhyrth", new String[]{"400", "Illegal Argument"});
         putJsons.put("{}", new String[]{"400", "@Valid"});
         putJsons.put("{\"king\":\"sauron\"}", new String[]{"400", "@Valid"});
         // Empty name + blank name
@@ -237,7 +270,7 @@ class FilmorateApplicationTests {
         putJsons.put("{\"id\":9,\"name\":\"Terminator\",\"description\":\"no fate\",\"releaseDate\":\"1984-10-26\",\"duration\":\"PT1H48M\"}",
                 new String[]{"404", "not found"});
         putJsons.put("{\"name\":\"Anora\",\"description\":\"has oscar\",\"releaseDate\":\"2024-05-21\",\"duration\":\"PT2H19M\"}",
-                new String[]{"404", "not found"});
+                new String[]{"400", "FilmIdValidator"});
         // Normal json with id
         putJsons.put("{\"id\":1,\"name\":\"Inception\",\"description\":\"leonardo\",\"releaseDate\":\"2010-07-08\",\"duration\":\"PT2H28M\"}",
                 new String[]{"200", "Inception"});
@@ -264,9 +297,9 @@ class FilmorateApplicationTests {
 
         // ###### GET BY ID ######
 
-        Map<String, String[]> getUrls = new HashMap<>();
+        Map<String, String[]> getUrls = new LinkedHashMap<>();
         // Bad id
-        getUrls.put("/films/f", new String[]{"400", "Bad Request"});
+        getUrls.put("/films/f", new String[]{"400", "Illegal Argument"});
         // Non-existing id
         getUrls.put("/films/-1", new String[]{"404", "not found"});
         getUrls.put("/films/0", new String[]{"404", "not found"});
@@ -283,6 +316,32 @@ class FilmorateApplicationTests {
             assertNotNull(body);
             assertTrue(body.contains(entry.getValue()[1]));
         }
+
+        // ###### DELETE BY ID ######
+
+        List<String[]> deleteUrls = new ArrayList<>();
+        // Bad id
+        deleteUrls.add(new String[]{"/films/f", "400", "Illegal Argument"});
+        // Non-existing id
+        deleteUrls.add(new String[]{"/films/-1", "404", "not found"});
+        deleteUrls.add(new String[]{"/films/0", "404", "not found"});
+        deleteUrls.add(new String[]{"/films/10", "404", "not found"});
+        // Existing id
+        deleteUrls.add(new String[]{"/films/1", "200", "Inception"});
+        deleteUrls.add(new String[]{"/films/2", "200", "Terminator"});
+        // Deleted id
+        deleteUrls.add(new String[]{"/films/1", "404", "not found"});
+        deleteUrls.add(new String[]{"/films/2", "404", "not found"});
+
+        request = new HttpEntity<>("", headers);
+        for (String[] url : deleteUrls) {
+            response = restTemplate.exchange(url[0], HttpMethod.DELETE, request, String.class);
+            assertEquals(url[1], String.valueOf(response.getStatusCode().value()));
+            body = response.getBody();
+            assertNotNull(body);
+            assertTrue(body.contains(url[2]));
+        }
+
     }
 
 
