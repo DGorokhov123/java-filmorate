@@ -24,6 +24,7 @@ name           // varchar(50), not null
 description    // varchar(200)
 release_date   // date
 duration       // bigint
+rating_id      // bigint, Foreign Key -> ratings.rating_id
 ```
 ### Table "likes"
 ```declarative
@@ -46,10 +47,4 @@ genre_id       // bigint, not null, Foreign Key -> genres.genre_id
 ```declarative
 rating_id      // bigint, Primary Key, autoincrement, not null
 name           // varchar(50), not null
-```
-### Table "film_ratings"
-```declarative
-film_id        // bigint, not null, Foreign Key -> films.film_id
-rating_id      // bigint, not null, Foreign Key -> ratings.rating_id
-  // + Unique key (user_id, film_id)
 ```
