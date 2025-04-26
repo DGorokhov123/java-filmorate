@@ -25,8 +25,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "@Valid"));                          // other object
 
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "ivanya.ru",
                     "login" : "ivandur",
                     "name" : "ivan durak",
@@ -34,8 +33,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "@Valid"));                          // bad email
 
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "",
                     "login" : "ivandur",
                     "name" : "ivan durak",
@@ -43,8 +41,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "UserEmailValidator"));                // empty email
 
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "ivan@ya.ru",
                     "login" : "",
                     "name" : "ivan durak",
@@ -52,8 +49,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "@Valid"));                     // empty login
 
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "ivan@ya.ru",
                     "login" : "iva ndur",
                     "name" : "ivan durak",
@@ -61,8 +57,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "UserLoginValidator"));              // login with spaces
 
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "ivan@ya.ru",
                     "login" : "ivandur",
                     "name" : "ivan durak",
@@ -70,8 +65,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "UserBirthdayValidator"));              // Birthday from future
 
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "ivan@ya.ru",
                     "login" : "ivandur",
                     "name" : "",
@@ -79,16 +73,14 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 200, "ivandur"));                     // Empty name
 
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "sofi@ya.ru",
                     "login" : "sofochka",
                     "birthday" : "2001-04-14"
                 }
                 """, 200, "sofochka"));                   // without name
 
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "oleg@ya.ru",
                     "login" : "olezhe",
                     "name" : "olen oleg",
@@ -96,8 +88,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 200, "olezhe"));                   // Normal json without id
 
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "id" : 1,
                     "email" : "otto@ya.ru",
                     "login" : "bismark",
@@ -113,14 +104,12 @@ class FilmorateApplicationTests extends HttpAbstractTest {
         assertTrue(checkPut("/users", "hrtfhyrth", 400, "Illegal Argument"));    // random string
         assertTrue(checkPut("/users", "{}", 400, "@Valid"));           // empty json
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "king" : "sauron"
                 }
                 """, 400, "@Valid"));                   // other json
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "id" : 1,
                     "email" : "ivanya.ru",
                     "login" : "ivandur",
@@ -129,8 +118,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "@Valid"));                   // bad email
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "id" : 1,
                     "email" : "",
                     "login" : "ivandur",
@@ -139,8 +127,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "UserEmailValidator"));                   // Empty email
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "id" : 1,
                     "email" : "ivan@ya.ru",
                     "login" : "",
@@ -149,8 +136,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "@Valid"));                   // Empty login
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "id" : 1,
                     "email" : "ivan@ya.ru",
                     "login" : "iva ndur",
@@ -159,8 +145,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "UserLoginValidator"));                   // login with spaces
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "id" : 1,
                     "email" : "ivan@ya.ru",
                     "login" : "ivandur",
@@ -169,8 +154,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "UserBirthdayValidator"));                   // Birthday from future
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "id" : 1,
                     "email" : "ivan@ya.ru",
                     "login" : "ivandur",
@@ -179,8 +163,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 200, "ivandur"));                   // Empty name
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "id" : 2,
                     "email" : "sofi@ya.ru",
                     "login" : "sofochka",
@@ -188,8 +171,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 200, "sofochka"));                   // without name
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "email" : "oleg@ya.ru",
                     "login" : "olezhe",
                     "name" : "olen oleg",
@@ -197,8 +179,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "Illegal Argument"));                   // without id
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "id" : 1045,
                     "email" : "otto@ya.ru",
                     "login" : "bismark",
@@ -207,8 +188,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 404, "not found"));                   // wrong id
 
-        assertTrue(checkPut("/users", """
-                {
+        assertTrue(checkPut("/users", "{" + """
                     "id" : 1,
                     "email" : "bobo@ya.ru",
                     "login" : "djbobo",
@@ -275,22 +255,19 @@ class FilmorateApplicationTests extends HttpAbstractTest {
         assertTrue(checkPost("/films", "hrtfhyrth", 400, "Illegal Argument"));       // random string
         assertTrue(checkPost("/films", "{}", 400, "@Valid"));             // empty json object
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "king" : "sauron"
                 }
                 """, 400, "@Valid"));                          // other object
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
                     "duration" : 139
                 }
                 """, 400, "@Valid"));                          // without name
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                    "name" : " ",
                    "description" : "has oscar",
                    "releaseDate" : "2024-05-21",
@@ -298,8 +275,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "@Valid"));                          // blank name
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "name" : "Anora",
                     "description" : "has oscar",
                     "releaseDate" : "1895-05-21",
@@ -307,8 +283,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "FilmReleaseDateValidator"));                          // early date
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "name" : "Anora",
                     "description" : "The quick brown fox jumps over the lazy dog near the riverbank.\
                                      Sunny hills bloom with vivid colors, while birds sing sweetly.\
@@ -318,8 +293,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "FilmDescriptionValidator"));                          // long description
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "name" : "Anora",
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
@@ -327,8 +301,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "FilmDurationValidator"));                          // negative duration
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "name" : "Anora",
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
@@ -339,8 +312,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 404, "FilmRatingValidator"));                          // rating not found
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "name" : "Anora",
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
@@ -353,8 +325,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 404, "FilmGenresValidator"));                          // genre not found
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "name" : "Anora",
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
@@ -362,8 +333,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 200, "Anora"));                          // Normal json without id
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "id" : 1,
                     "name" : "Terminator",
                     "description" : "no fate",
@@ -379,14 +349,12 @@ class FilmorateApplicationTests extends HttpAbstractTest {
         assertTrue(checkPut("/films", "hrtfhyrth", 400, "Illegal Argument"));       // random string
         assertTrue(checkPut("/films", "{}", 400, "@Valid"));             // empty json object
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "king" : "sauron"
                 }
                 """, 400, "@Valid"));                          // other object
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "id" : 1,
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
@@ -394,8 +362,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "@Valid"));                          // without name
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                    "id" : 1,
                    "name" : " ",
                    "description" : "has oscar",
@@ -404,8 +371,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "@Valid"));                          // blank name
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "id" : 1,
                     "name" : "Anora",
                     "description" : "has oscar",
@@ -414,8 +380,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "FilmReleaseDateValidator"));                          // early date
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "id" : 1,
                     "name" : "Anora",
                     "description" : "The quick brown fox jumps over the lazy dog near the riverbank.\
@@ -426,8 +391,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "FilmDescriptionValidator"));                          // long description
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "id" : 1,
                     "name" : "Anora",
                     "description" : "has oscar",
@@ -436,8 +400,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "FilmDurationValidator"));                          // negative duration
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "id" : 1,
                     "name" : "Anora",
                     "description" : "has oscar",
@@ -449,8 +412,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 404, "FilmRatingValidator"));                          // rating not found
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "id" : 1,
                     "name" : "Anora",
                     "description" : "has oscar",
@@ -464,8 +426,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 404, "FilmGenresValidator"));                          // genre not found
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "name" : "Anora",
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
@@ -473,8 +434,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 400, "Illegal Argument"));                          // without id
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "id" : 10000,
                     "name" : "Anora",
                     "description" : "has oscar",
@@ -483,8 +443,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                 }
                 """, 404, "not found"));                          // wrong id
 
-        assertTrue(checkPut("/films", """
-                {
+        assertTrue(checkPut("/films", "{" + """
                     "id" : 1,
                     "name" : "Inception",
                     "description" : "leonardo",

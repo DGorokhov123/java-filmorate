@@ -13,24 +13,21 @@ class LikesAndFriendsTest extends HttpAbstractTest {
 
     @BeforeEach
     void setUp() {
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "oleg@ya.ru",
                     "login" : "olezhe",
                     "name" : "olen oleg",
                     "birthday" : "2003-06-21"
                 }
                 """, 200, "olezhe"));
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "ivan@ya.ru",
                     "login" : "vanya",
                     "name" : "ivan durak",
                     "birthday" : "2003-06-21"
                 }
                 """, 200, "vanya"));
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "email" : "anna@ya.ru",
                     "login" : "anka",
                     "name" : "anna pulemet",
@@ -38,24 +35,21 @@ class LikesAndFriendsTest extends HttpAbstractTest {
                 }
                 """, 200, "anka"));
 
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "name" : "Anora",
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
                     "duration" : 139
                 }
                 """, 200, "Anora"));
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "name" : "Terminator",
                     "description" : "no fate",
                     "releaseDate" : "1984-10-26",
                     "duration" : 108
                 }
                 """, 200, "Terminator"));
-        assertTrue(checkPost("/films", """
-                {
+        assertTrue(checkPost("/films", "{" + """
                     "name" : "Inception",
                     "description" : "leonardo",
                     "releaseDate" : "2010-07-08",
