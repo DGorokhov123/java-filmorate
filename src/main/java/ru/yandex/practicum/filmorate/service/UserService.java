@@ -9,8 +9,8 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,18 +45,19 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        if (id == null) throw new IllegalArgumentException("User id shouldn't be null");
+        if (id == null || id < 1) throw new IllegalArgumentException("Invalid User id");
         return userStorage.getUserById(id);
     }
 
     public User deleteUserById(Long id) {
-        if (id == null) throw new IllegalArgumentException("User id shouldn't be null");
+        if (id == null || id < 1) throw new IllegalArgumentException("Invalid User id");
         User user = userStorage.deleteUserById(id);
         log.debug("Deleted user {}", user);
         return user;
     }
 
     public User createUser(User user) {
+        if (user == null) throw new IllegalArgumentException("User object shouldn't be null");
         userCreateValidator.validate(user);
         User newUser = userStorage.createUser(user);
         log.debug("Created user {}", newUser);
@@ -64,6 +65,8 @@ public class UserService {
     }
 
     public User updateUser(User user) {
+        if (user == null) throw new IllegalArgumentException("User object shouldn't be null");
+        if (user.getId() == null || user.getId() < 1) throw new IllegalArgumentException("Invalid User id");
         userUpdateValidator.validate(user);
         User newUser = userStorage.updateUser(user);
         log.debug("Updated user {}", newUser);
@@ -75,42 +78,34 @@ public class UserService {
 
 
     public void addFriend(Long id1, Long id2) {
-        User user1 = userStorage.getUserById(id1);
-        User user2 = userStorage.getUserById(id2);
-        user1.getFriends().add(id2);
-        user2.getFriends().add(id1);
-        log.debug("Added friends: {} and {}", user1, user2);
+        if (id1 == null || id2 == null || id1 < 1 || id2 < 1) throw new IllegalArgumentException("Invalid User id");
+        if (Objects.equals(id1, id2)) throw new IllegalArgumentException("User ids are equal");
+        userStorage.addFriend(id1, id2);
+        log.debug("User {} added friend {}", id1, id2);
     }
 
     public void removeFriend(Long id1, Long id2) {
-        User user1 = userStorage.getUserById(id1);
-        User user2 = userStorage.getUserById(id2);
-        user1.getFriends().remove(id2);
-        user2.getFriends().remove(id1);
-        log.debug("Removed from friends: {} and {}", user1, user2);
-    }
-
-    public boolean areFriends(Long id1, Long id2) {
-        User user1 = userStorage.getUserById(id1);
-        return user1.getFriends().contains(id2);
+        if (id1 == null || id2 == null || id1 < 1 || id2 < 1) throw new IllegalArgumentException("Invalid User id");
+        if (Objects.equals(id1, id2)) throw new IllegalArgumentException("User ids are equal");
+        userStorage.removeFriend(id1, id2);
+        log.debug("User {} removed user {} from friends", id1, id2);
     }
 
     public Set<User> findFriends(Long id) {
-        Set<Long> friendIds = userStorage.getUserById(id).getFriends();
-        Set<User> friendUsers = new HashSet<>();
-        for (Long friendId : friendIds) {
-            User userById = userStorage.getUserById(friendId);
-            friendUsers.add(userById);
-        }
-        return friendUsers;
+        if (id == null || id < 1) throw new IllegalArgumentException("Invalid User id");
+        User user = userStorage.getUserById(id);
+        if (user.getFollowing().isEmpty()) return Set.of();
+        Set<Long> friendIds = new HashSet<>(user.getFollowing());
+        Collection<User> friendsCollection = userStorage.getUsersByIds(friendIds);
+        return new HashSet<>(friendsCollection);
     }
 
     public Set<User> findMutualFriends(Long id1, Long id2) {
-        Set<User> friends1 = findFriends(id1);
-        Set<User> friends2 = findFriends(id2);
-        return friends1.stream()
-                .filter(friends2::contains)
-                .collect(Collectors.toSet());
+        if (id1 == null || id2 == null || id1 < 1 || id2 < 1) throw new IllegalArgumentException("Invalid User id");
+        if (Objects.equals(id1, id2)) throw new IllegalArgumentException("User ids are equal");
+        Set<User> mutualFriends = new HashSet<>(findFriends(id1));
+        mutualFriends.retainAll(findFriends(id2));
+        return mutualFriends;
     }
 
 }

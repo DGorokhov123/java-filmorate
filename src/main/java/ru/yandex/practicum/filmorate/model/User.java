@@ -23,6 +23,8 @@ public class User {
 
     private LocalDate birthday;
 
-    private final Set<Long> friends = new HashSet<>();
+    private Set<Long> followers = new HashSet<>();
+
+    private Set<Long> following = new HashSet<>();
 
 }
