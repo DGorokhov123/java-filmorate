@@ -19,8 +19,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
         assertTrue(checkPost("/users", "", 400, "Illegal Argument"));        // empty json
         assertTrue(checkPost("/users", "hrtfhyrth", 400, "Illegal Argument"));        // random string
         assertTrue(checkPost("/users", "{}", 400, "@Valid"));           // empty object
-        assertTrue(checkPost("/users", """
-                {
+        assertTrue(checkPost("/users", "{" + """
                     "king" : "sauron"
                 }
                 """, 400, "@Valid"));                          // other object
@@ -317,11 +316,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
                     "duration" : 139,
-                    "genres": [
-                        {
-                            "id": 600
-                        }
-                    ]
+                    "genres": [ { "id": 600 } ]
                 }
                 """, 404, "FilmGenresValidator"));                          // genre not found
 
@@ -418,11 +413,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                     "description" : "has oscar",
                     "releaseDate" : "2024-05-21",
                     "duration" : 139,
-                    "genres": [
-                        {
-                            "id": 600
-                        }
-                    ]
+                    "genres": [  { "id": 600  }  ]
                 }
                 """, 404, "FilmGenresValidator"));                          // genre not found
 
