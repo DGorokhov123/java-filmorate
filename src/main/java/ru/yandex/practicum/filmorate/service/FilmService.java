@@ -1,74 +1,109 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.validators.film.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class FilmService {
 
-    private final FilmValidator filmCreateValidator = FilmValidatorBuilder.builder()
-            .register(new FilmNullValidator())
-            .register(new FilmNameValidator())
-            .register(new FilmDescriptionValidator())
-            .register(new FilmReleaseDateValidator())
-            .register(new FilmDurationValidator())
-            .build();
-
-    private final FilmValidator filmUpdateValidator = FilmValidatorBuilder.builder()
-            .register(new FilmNullValidator())
-            .register(new FilmIdValidator())
-            .register(new FilmNameValidator())
-            .register(new FilmDescriptionValidator())
-            .register(new FilmReleaseDateValidator())
-            .register(new FilmDurationValidator())
-            .build();
+    private final FilmValidator filmCreateValidator;
+    private final FilmValidator filmUpdateValidator;
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final RatingService ratingService;
+    private final GenreService genreService;
+
+    @Autowired
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, RatingService ratingService, GenreService genreService) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+        this.ratingService = ratingService;
+        this.genreService = genreService;
+
+        filmCreateValidator = FilmValidatorBuilder.builder()
+                .register(new FilmNullValidator())
+                .register(new FilmNameValidator())
+                .register(new FilmDescriptionValidator())
+                .register(new FilmReleaseDateValidator())
+                .register(new FilmDurationValidator())
+                .register(new FilmRatingValidator(ratingService.getRatingsMap()))
+                .register(new FilmGenresValidator(genreService.getGenresMap()))
+                .build();
+
+        filmUpdateValidator = FilmValidatorBuilder.builder()
+                .register(new FilmNullValidator())
+                .register(new FilmIdValidator())
+                .register(new FilmNameValidator())
+                .register(new FilmDescriptionValidator())
+                .register(new FilmReleaseDateValidator())
+                .register(new FilmDurationValidator())
+                .register(new FilmRatingValidator(ratingService.getRatingsMap()))
+                .register(new FilmGenresValidator(genreService.getGenresMap()))
+                .build();
+
+    }
 
 
     // STORAGE OPERATIONS
 
 
-    public Collection<Film> getFilms() {
-        return filmStorage.getFilms();
+    public Collection<FilmApiDto> getFilms() {
+        Collection<Film> films = filmStorage.getFilms();
+        Map<Long, Rating> ratings = ratingService.getRatingsMap();
+        Map<Long, Genre> genres = genreService.getGenresMap();
+        return films.stream().map(f -> FilmMapper.toDto(f, ratings, genres)).toList();
     }
 
-    public Film getFilmById(Long id) {
-        if (id == null) throw new IllegalArgumentException("Film id shouldn't be null");
-        return filmStorage.getFilmById(id);
+    public FilmApiDto getFilmById(Long id) {
+        if (id == null || id < 1) throw new IllegalArgumentException("Invalid Film Id");
+        Film film = filmStorage.getFilmById(id);
+        Map<Long, Rating> ratings = ratingService.getRatingsMap();
+        Map<Long, Genre> genres = genreService.getGenresMap();
+        return FilmMapper.toDto(film, ratings, genres);
     }
 
-    public Film deleteFilmById(Long id) {
-        if (id == null) throw new IllegalArgumentException("Film id shouldn't be null");
+    public FilmApiDto deleteFilmById(Long id) {
+        if (id == null || id < 1) throw new IllegalArgumentException("Invalid Film Id");
         Film film = filmStorage.deleteFilmById(id);
         log.debug("Deleted film {}", film);
-        return film;
+        Map<Long, Rating> ratings = ratingService.getRatingsMap();
+        Map<Long, Genre> genres = genreService.getGenresMap();
+        return FilmMapper.toDto(film, ratings, genres);
     }
 
-    public Film createFilm(Film film) {
+    public FilmApiDto createFilm(FilmApiDto dto) {
+        if (dto == null) throw new IllegalArgumentException("Film object shouldn't be null");
+        Film film = FilmMapper.toFilm(dto);
         filmCreateValidator.validate(film);
         Film newFilm = filmStorage.createFilm(film);
         log.debug("Created film {}", newFilm);
-        return newFilm;
+        Map<Long, Rating> ratings = ratingService.getRatingsMap();
+        Map<Long, Genre> genres = genreService.getGenresMap();
+        return FilmMapper.toDto(newFilm, ratings, genres);
     }
 
-    public Film updateFilm(Film film) {
+    public FilmApiDto updateFilm(FilmApiDto dto) {
+        if (dto == null) throw new IllegalArgumentException("Film object shouldn't be null");
+        if (dto.getId() == null || dto.getId() < 1) throw new IllegalArgumentException("Invalid Film Id");
+        Film film = FilmMapper.toFilm(dto);
         filmUpdateValidator.validate(film);
+        filmStorage.checkFilmById(film.getId());
         Film newFilm = filmStorage.updateFilm(film);
         log.debug("Updated film {}", newFilm);
-        return newFilm;
+        Map<Long, Rating> ratings = ratingService.getRatingsMap();
+        Map<Long, Genre> genres = genreService.getGenresMap();
+        return FilmMapper.toDto(newFilm, ratings, genres);
     }
 
 
@@ -76,25 +111,29 @@ public class FilmService {
 
 
     public void addLike(Long filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId);
-        User user = userStorage.getUserById(userId);
-        film.getLikes().add(user.getId());
-        log.debug("Added like to film {} by user {}", film, user);
+        if (filmId == null || filmId < 1) throw new IllegalArgumentException("Invalid Film Id");
+        if (userId == null || userId < 1) throw new IllegalArgumentException("Invalid User Id");
+        userStorage.checkUserById(userId);
+        filmStorage.checkFilmById(filmId);
+        filmStorage.addLike(filmId, userId);
+        log.debug("Added like to film {} by user {}", filmId, userId);
     }
 
     public void removeLike(Long filmId, Long userId) {
-        Film film = filmStorage.getFilmById(filmId);
-        User user = userStorage.getUserById(userId);
-        film.getLikes().remove(user.getId());
-        log.debug("Removed like from film {} by user {}", film, user);
+        if (filmId == null || filmId < 1) throw new IllegalArgumentException("Invalid Film Id");
+        if (userId == null || userId < 1) throw new IllegalArgumentException("Invalid User Id");
+        userStorage.checkUserById(userId);
+        filmStorage.checkFilmById(filmId);
+        filmStorage.removeLike(filmId, userId);
+        log.debug("Removed like from film {} by user {}", filmId, userId);
     }
 
-    public List<Film> getPopular(Integer count) {
+    public List<FilmApiDto> getPopular(Integer count) {
         if (count == null || count < 0) throw new IllegalArgumentException("count should be a positive integer number");
-        return filmStorage.getFilms().stream()
-                .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
-                .limit(count)
-                .toList();
+        List<Film> films = filmStorage.getPopular(count);
+        Map<Long, Rating> ratings = ratingService.getRatingsMap();
+        Map<Long, Genre> genres = genreService.getGenresMap();
+        return films.stream().map(f -> FilmMapper.toDto(f, ratings, genres)).toList();
     }
 
 }
