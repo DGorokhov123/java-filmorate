@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.GenreApiDto;
+import ru.yandex.practicum.filmorate.model.GenreMapper;
 import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.storage.GenreDBStorage;
 
@@ -21,19 +23,17 @@ public class GenreService {
 
     private final GenreDBStorage genreDBStorage;
 
-    public Collection<Genre> getGenres() {
-        return genreDBStorage.getGenres();
+    public Collection<GenreApiDto> getGenres() {
+        return genreDBStorage.getGenres().stream()
+                .filter(Objects::nonNull)
+                .map(GenreMapper::toDto)
+                .toList();
     }
 
-    public Genre getGenreById(Long id) {
+    public GenreApiDto getGenreById(Long id) {
         if (id == null || id < 1) throw new IllegalArgumentException("Invalid Genre Id");
-        return genreDBStorage.getGenreById(id);
-    }
-
-    public List<Genre> getGenreByIdCSV(String idList) {
-        if (idList == null || !idList.matches("[\\d,\\s]*"))
-            throw new IllegalArgumentException("Invalid Genre Id list");
-        return genreDBStorage.getGenreByIdCSV(idList);
+        Genre genre = genreDBStorage.getGenreById(id);
+        return GenreMapper.toDto(genre);
     }
 
     public void checkFilmGenres(Film film) {
@@ -61,6 +61,12 @@ public class GenreService {
             throw new NotFoundException("Genres not found", csv);
         }
 
+    }
+
+    private List<Genre> getGenreByIdCSV(String idList) {
+        if (idList == null || !idList.matches("[\\d,\\s]*"))
+            throw new IllegalArgumentException("Invalid Genre Id list");
+        return genreDBStorage.getGenreByIdCSV(idList);
     }
 
 
