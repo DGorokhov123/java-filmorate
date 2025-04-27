@@ -19,6 +19,12 @@ public class GenreRowMapper implements RowMapper<Genre> {
             WHERE genre_id = ?;
             """;
 
+    public static String GET_GENRE_BY_ID_CSV_QUERY = """
+            SELECT genre_id, name
+            FROM genres
+            WHERE genre_id IN ( THE_LIST_OF_IDS );
+            """;
+
     @Override
     public Genre mapRow(ResultSet rs, int rowNum) throws SQLException {
         Genre genre = new Genre();

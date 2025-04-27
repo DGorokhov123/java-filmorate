@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.storage.mappers.FilmRowMapper;
@@ -46,7 +47,7 @@ public class FilmDbStorage implements FilmStorage {
         try {
             jdbc.queryForObject(FilmRowMapper.GET_SIMPLE_FILM_QUERY, new FilmRowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Film not found", id);
+            throw new NotFoundException("Check failed: Film not found", id);
         }
     }
 
@@ -83,8 +84,8 @@ public class FilmDbStorage implements FilmStorage {
                     ps.setNull(4, Types.BIGINT);
                 }
 
-                if (film.getRating() != null) {
-                    ps.setLong(5, film.getRating());
+                if (film.getMpa() != null && film.getMpa().getId() != null) {
+                    ps.setLong(5, film.getMpa().getId());
                 } else {
                     ps.setNull(5, Types.BIGINT);
                 }
@@ -98,8 +99,10 @@ public class FilmDbStorage implements FilmStorage {
         }
         film.setId(keyHolder.getKey().longValue());
         try {
-            for (Long genreId : film.getGenres()) {
-                jdbc.update(FilmRowMapper.ADD_FILM_GENRE_QUERY, film.getId(), genreId);
+            for (Genre genre : film.getGenres()) {
+                if (genre.getId() != null) {
+                    jdbc.update(FilmRowMapper.ADD_FILM_GENRE_QUERY, film.getId(), genre.getId());
+                }
             }
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("Genre Referential integrity error", film);
@@ -110,9 +113,11 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         checkFilmById(film.getId());
+        Long updateDuration = (film.getDuration() == null) ? null : film.getDuration().toMillis();
+        Long updateRating = (film.getMpa() == null) ? null : film.getMpa().getId();
         try {
             jdbc.update(FilmRowMapper.UPDATE_FILM_QUERY,
-                    film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration().toMillis(), film.getRating(),
+                    film.getName(), film.getDescription(), film.getReleaseDate(), updateDuration, updateRating,
                     film.getId());
         } catch (DuplicateKeyException e) {
             throw new ValidationException("Film duplicate key error", film);
@@ -121,8 +126,10 @@ public class FilmDbStorage implements FilmStorage {
         }
         try {
             jdbc.update(FilmRowMapper.REMOVE_FILM_GENRES_QUERY, film.getId());
-            for (Long genreId : film.getGenres()) {
-                jdbc.update(FilmRowMapper.ADD_FILM_GENRE_QUERY, film.getId(), genreId);
+            for (Genre genre : film.getGenres()) {
+                if (genre.getId() != null) {
+                    jdbc.update(FilmRowMapper.ADD_FILM_GENRE_QUERY, film.getId(), genre.getId());
+                }
             }
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("Film referential integrity error", film);

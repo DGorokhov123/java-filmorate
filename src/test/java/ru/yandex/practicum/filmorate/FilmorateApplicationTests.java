@@ -309,7 +309,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                         "id": 500
                     }
                 }
-                """, 404, "FilmRatingValidator"));                          // rating not found
+                """, 404, "Rating not found"));                          // rating not found
 
         assertTrue(checkPost("/films", "{" + """
                     "name" : "Anora",
@@ -318,7 +318,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                     "duration" : 139,
                     "genres": [ { "id": 600 } ]
                 }
-                """, 404, "FilmGenresValidator"));                          // genre not found
+                """, 404, "Genres not found"));                          // genre not found
 
         assertTrue(checkPost("/films", "{" + """
                     "name" : "Anora",
@@ -405,7 +405,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                         "id": 500
                     }
                 }
-                """, 404, "FilmRatingValidator"));                          // rating not found
+                """, 404, "Rating not found"));                          // rating not found
 
         assertTrue(checkPut("/films", "{" + """
                     "id" : 1,
@@ -415,7 +415,7 @@ class FilmorateApplicationTests extends HttpAbstractTest {
                     "duration" : 139,
                     "genres": [  { "id": 600  }  ]
                 }
-                """, 404, "FilmGenresValidator"));                          // genre not found
+                """, 404, "Genres not found"));                          // genre not found
 
         assertTrue(checkPut("/films", "{" + """
                     "name" : "Anora",

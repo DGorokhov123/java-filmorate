@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.model.FilmApiDto;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
@@ -22,10 +22,8 @@ import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -57,17 +55,17 @@ class FilmServiceTest {
         u2.setEmail("marik@ya.ru");
         userService.createUser(u2);
 
-        FilmApiDto f1 = new FilmApiDto();
+        Film f1 = new Film();
         f1.setName("Omen");
         f1.setDescription("sweet child");
         filmService.createFilm(f1);
 
-        FilmApiDto f2 = new FilmApiDto();
+        Film f2 = new Film();
         f2.setName("Terminator");
         f2.setDescription("grok 5 released");
         filmService.createFilm(f2);
 
-        FilmApiDto f3 = new FilmApiDto();
+        Film f3 = new Film();
         f3.setName("Titanic");
         f3.setDescription("he sank, she not");
         filmService.createFilm(f3);
@@ -94,8 +92,8 @@ class FilmServiceTest {
 
     @Test
     void getFilmsAndPopular() {
-        Collection<FilmApiDto> dtos = filmService.getFilms();
-        List<String> names = dtos.stream().filter(Objects::nonNull).map(FilmApiDto::getName).toList();
+        Collection<Film> films = filmService.getFilms();
+        List<String> names = films.stream().filter(Objects::nonNull).map(Film::getName).toList();
         assertEquals(3, names.size());
         assertEquals("Omen", names.get(0));
         assertEquals("Terminator", names.get(1));
@@ -105,8 +103,8 @@ class FilmServiceTest {
         filmService.addLike(3L, 2L);
         filmService.addLike(2L, 1L);
 
-        Collection<FilmApiDto> popular = filmService.getPopular(1000);
-        List<String> popularNames = popular.stream().filter(Objects::nonNull).map(FilmApiDto::getName).toList();
+        Collection<Film> popular = filmService.getPopular(1000);
+        List<String> popularNames = popular.stream().filter(Objects::nonNull).map(Film::getName).toList();
         assertEquals(3, popularNames.size());
         assertEquals("Titanic", popularNames.get(0));
         assertEquals("Terminator", popularNames.get(1));
@@ -122,65 +120,63 @@ class FilmServiceTest {
 
     @Test
     void filmCrudOps() {
-        FilmApiDto dto = new FilmApiDto();
-        dto.setName("Anora");
-        dto.setDescription("Slut story");
-        dto.setDuration(Duration.of(2, ChronoUnit.HOURS));
-        dto.setReleaseDate(LocalDate.of(2025, 3, 14));
+        Film film = new Film();
+        film.setName("Anora");
+        film.setDescription("Slut story");
+        film.setDuration(Duration.of(2, ChronoUnit.HOURS));
+        film.setReleaseDate(LocalDate.of(2025, 3, 14));
         Rating mpa = new Rating();
         mpa.setId(1L);
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         Genre genre1 = new Genre();
         genre1.setId(1L);
         Genre genre2 = new Genre();
         genre2.setId(2L);
-        List<Genre> genres = new ArrayList<>();
+        Set<Genre> genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto createdFilmDto = filmService.createFilm(dto);
+        film.setGenres(genres);
+        Film createdFilm = filmService.createFilm(film);
 
-        Long id = createdFilmDto.getId();
+        Long id = createdFilm.getId();
 
-        createdFilmDto = filmService.getFilmById(id);
-        assertEquals(dto.getName(), createdFilmDto.getName());
-        assertEquals(dto.getDescription(), createdFilmDto.getDescription());
-        assertEquals(dto.getDuration(), createdFilmDto.getDuration());
-        assertEquals(dto.getReleaseDate(), createdFilmDto.getReleaseDate());
-        assertEquals(dto.getMpa().getId(), createdFilmDto.getMpa().getId());
-        for (int i = 0; i < dto.getGenres().size(); i++) {
-            assertEquals(dto.getGenres().get(i).getId(), createdFilmDto.getGenres().get(i).getId());
-        }
+        createdFilm = filmService.getFilmById(id);
+        assertEquals(film.getName(), createdFilm.getName());
+        assertEquals(film.getDescription(), createdFilm.getDescription());
+        assertEquals(film.getDuration(), createdFilm.getDuration());
+        assertEquals(film.getReleaseDate(), createdFilm.getReleaseDate());
+        assertEquals(film.getMpa().getId(), createdFilm.getMpa().getId());
+        assertEquals(film.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()),
+                createdFilm.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
 
-        FilmApiDto nextDto = new FilmApiDto();
-        nextDto.setId(id);
-        nextDto.setName("Borat");
-        nextDto.setDescription("goes to asashay");
-        nextDto.setDuration(Duration.of(3, ChronoUnit.HOURS));
-        nextDto.setReleaseDate(LocalDate.of(2010, 3, 14));
+        Film nextFilm = new Film();
+        nextFilm.setId(id);
+        nextFilm.setName("Borat");
+        nextFilm.setDescription("goes to asashay");
+        nextFilm.setDuration(Duration.of(3, ChronoUnit.HOURS));
+        nextFilm.setReleaseDate(LocalDate.of(2010, 3, 14));
         Rating mpa2 = new Rating();
         mpa2.setId(2L);
-        nextDto.setMpa(mpa2);
+        nextFilm.setMpa(mpa2);
         Genre genre3 = new Genre();
         genre3.setId(3L);
         Genre genre4 = new Genre();
         genre4.setId(4L);
-        List<Genre> genres2 = new ArrayList<>();
+        Set<Genre> genres2 = new HashSet<>();
         genres2.add(genre3);
         genres2.add(genre4);
-        nextDto.setGenres(genres2);
+        nextFilm.setGenres(genres2);
 
-        filmService.updateFilm(nextDto);
-        FilmApiDto updatedFilmDto = filmService.getFilmById(id);
-        assertEquals(nextDto.getId(), updatedFilmDto.getId());
-        assertEquals(nextDto.getName(), updatedFilmDto.getName());
-        assertEquals(nextDto.getDescription(), updatedFilmDto.getDescription());
-        assertEquals(nextDto.getDuration(), updatedFilmDto.getDuration());
-        assertEquals(nextDto.getReleaseDate(), updatedFilmDto.getReleaseDate());
-        assertEquals(nextDto.getMpa().getId(), updatedFilmDto.getMpa().getId());
-        for (int i = 0; i < dto.getGenres().size(); i++) {
-            assertEquals(nextDto.getGenres().get(i).getId(), updatedFilmDto.getGenres().get(i).getId());
-        }
+        filmService.updateFilm(nextFilm);
+        Film updatedFilm = filmService.getFilmById(id);
+        assertEquals(nextFilm.getId(), updatedFilm.getId());
+        assertEquals(nextFilm.getName(), updatedFilm.getName());
+        assertEquals(nextFilm.getDescription(), updatedFilm.getDescription());
+        assertEquals(nextFilm.getDuration(), updatedFilm.getDuration());
+        assertEquals(nextFilm.getReleaseDate(), updatedFilm.getReleaseDate());
+        assertEquals(nextFilm.getMpa().getId(), updatedFilm.getMpa().getId());
+        assertEquals(nextFilm.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()),
+                updatedFilm.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
 
         filmService.deleteFilmById(id);
         assertThrows(NotFoundException.class, () -> {
@@ -189,132 +185,132 @@ class FilmServiceTest {
 
         // Wrong operations
 
-        dto = new FilmApiDto();
+        film = new Film();
         //dto.setName("Bad film");                                  // without name
-        dto.setDescription("even don't try");
-        dto.setDuration(Duration.of(24, ChronoUnit.HOURS));
-        dto.setReleaseDate(LocalDate.of(1977, 3, 14));
+        film.setDescription("even don't try");
+        film.setDuration(Duration.of(24, ChronoUnit.HOURS));
+        film.setReleaseDate(LocalDate.of(1977, 3, 14));
         mpa = new Rating();
         mpa.setId(1L);
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         genre1 = new Genre();
         genre1.setId(1L);
         genre2 = new Genre();
         genre2.setId(2L);
-        genres = new ArrayList<>();
+        genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto finalDto = dto;
+        film.setGenres(genres);
+        Film finalDto = film;
         assertThrows(ValidationException.class, () -> {
             filmService.createFilm(finalDto);
         });
 
-        dto = new FilmApiDto();                             // long desc
-        dto.setName("Bad film");
-        dto.setDescription("""
+        film = new Film();                             // long desc
+        film.setName("Bad film");
+        film.setDescription("""
                 The quick brown fox jumps over the lazy dog near the riverbank.
                 Sunny hills bloom with vivid colors, while birds sing sweetly.
                 Time flies fast as the wind carries dreams across the vast, open and blue sky.
                 """);
-        dto.setDuration(Duration.of(24, ChronoUnit.HOURS));
-        dto.setReleaseDate(LocalDate.of(1977, 3, 14));
+        film.setDuration(Duration.of(24, ChronoUnit.HOURS));
+        film.setReleaseDate(LocalDate.of(1977, 3, 14));
         mpa = new Rating();
         mpa.setId(1L);
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         genre1 = new Genre();
         genre1.setId(1L);
         genre2 = new Genre();
         genre2.setId(2L);
-        genres = new ArrayList<>();
+        genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto finalDto1 = dto;
+        film.setGenres(genres);
+        Film finalDto1 = film;
         assertThrows(ValidationException.class, () -> {
             filmService.createFilm(finalDto1);
         });
 
-        dto = new FilmApiDto();
-        dto.setName("Bad film");
-        dto.setDescription("even don't try");
-        dto.setDuration(Duration.of(24, ChronoUnit.HOURS));
-        dto.setReleaseDate(LocalDate.of(1777, 3, 14));                  // early date
+        film = new Film();
+        film.setName("Bad film");
+        film.setDescription("even don't try");
+        film.setDuration(Duration.of(24, ChronoUnit.HOURS));
+        film.setReleaseDate(LocalDate.of(1777, 3, 14));                  // early date
         mpa = new Rating();
         mpa.setId(1L);
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         genre1 = new Genre();
         genre1.setId(1L);
         genre2 = new Genre();
         genre2.setId(2L);
-        genres = new ArrayList<>();
+        genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto finalDto2 = dto;
+        film.setGenres(genres);
+        Film finalDto2 = film;
         assertThrows(ValidationException.class, () -> {
             filmService.createFilm(finalDto2);
         });
 
-        dto = new FilmApiDto();
-        dto.setName("Bad film");
-        dto.setDescription("even don't try");
-        dto.setDuration(Duration.of(-24, ChronoUnit.HOURS));              // negative duration
-        dto.setReleaseDate(LocalDate.of(1977, 3, 14));
+        film = new Film();
+        film.setName("Bad film");
+        film.setDescription("even don't try");
+        film.setDuration(Duration.of(-24, ChronoUnit.HOURS));              // negative duration
+        film.setReleaseDate(LocalDate.of(1977, 3, 14));
         mpa = new Rating();
         mpa.setId(1L);
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         genre1 = new Genre();
         genre1.setId(1L);
         genre2 = new Genre();
         genre2.setId(2L);
-        genres = new ArrayList<>();
+        genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto finalDto3 = dto;
+        film.setGenres(genres);
+        Film finalDto3 = film;
         assertThrows(ValidationException.class, () -> {
             filmService.createFilm(finalDto3);
         });
 
-        dto = new FilmApiDto();
-        dto.setName("Bad film");
-        dto.setDescription("even don't try");
-        dto.setDuration(Duration.of(24, ChronoUnit.HOURS));
-        dto.setReleaseDate(LocalDate.of(1977, 3, 14));
+        film = new Film();
+        film.setName("Bad film");
+        film.setDescription("even don't try");
+        film.setDuration(Duration.of(24, ChronoUnit.HOURS));
+        film.setReleaseDate(LocalDate.of(1977, 3, 14));
         mpa = new Rating();
         mpa.setId(1000L);                                 // unknown rating
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         genre1 = new Genre();
         genre1.setId(1L);
         genre2 = new Genre();
         genre2.setId(2L);
-        genres = new ArrayList<>();
+        genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto finalDto4 = dto;
+        film.setGenres(genres);
+        Film finalDto4 = film;
         assertThrows(NotFoundException.class, () -> {
             filmService.createFilm(finalDto4);
         });
 
-        dto = new FilmApiDto();
-        dto.setName("Bad film");
-        dto.setDescription("even don't try");
-        dto.setDuration(Duration.of(24, ChronoUnit.HOURS));
-        dto.setReleaseDate(LocalDate.of(1977, 3, 14));
+        film = new Film();
+        film.setName("Bad film");
+        film.setDescription("even don't try");
+        film.setDuration(Duration.of(24, ChronoUnit.HOURS));
+        film.setReleaseDate(LocalDate.of(1977, 3, 14));
         mpa = new Rating();
         mpa.setId(1L);
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         genre1 = new Genre();
         genre1.setId(1000L);                          // unknown genre
         genre2 = new Genre();
         genre2.setId(2L);
-        genres = new ArrayList<>();
+        genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto finalDto5 = dto;
+        film.setGenres(genres);
+        Film finalDto5 = film;
         assertThrows(NotFoundException.class, () -> {
             filmService.createFilm(finalDto5);
         });
@@ -325,69 +321,69 @@ class FilmServiceTest {
         });
 
 
-        dto = new FilmApiDto();                       // update without id
-        dto.setName("Bad film");
-        dto.setDescription("even don't try");
-        dto.setDuration(Duration.of(24, ChronoUnit.HOURS));
-        dto.setReleaseDate(LocalDate.of(1977, 3, 14));
+        film = new Film();                       // update without id
+        film.setName("Bad film");
+        film.setDescription("even don't try");
+        film.setDuration(Duration.of(24, ChronoUnit.HOURS));
+        film.setReleaseDate(LocalDate.of(1977, 3, 14));
         mpa = new Rating();
         mpa.setId(1L);
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         genre1 = new Genre();
         genre1.setId(1L);
         genre2 = new Genre();
         genre2.setId(2L);
-        genres = new ArrayList<>();
+        genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto finalDto6 = dto;
+        film.setGenres(genres);
+        Film finalDto6 = film;
         assertThrows(IllegalArgumentException.class, () -> {
             filmService.updateFilm(finalDto6);
         });
 
 
-        dto = new FilmApiDto();
-        dto.setId(1L);
+        film = new Film();
+        film.setId(1L);
         //dto.setName("Bad film");                                      // update without name
-        dto.setDescription("even don't try");
-        dto.setDuration(Duration.of(24, ChronoUnit.HOURS));
-        dto.setReleaseDate(LocalDate.of(1977, 3, 14));
+        film.setDescription("even don't try");
+        film.setDuration(Duration.of(24, ChronoUnit.HOURS));
+        film.setReleaseDate(LocalDate.of(1977, 3, 14));
         mpa = new Rating();
         mpa.setId(1L);
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         genre1 = new Genre();
         genre1.setId(1L);
         genre2 = new Genre();
         genre2.setId(2L);
-        genres = new ArrayList<>();
+        genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto finalDto7 = dto;
+        film.setGenres(genres);
+        Film finalDto7 = film;
         assertThrows(ValidationException.class, () -> {
             filmService.updateFilm(finalDto7);
         });
 
 
-        dto = new FilmApiDto();
-        dto.setId(1000L);                                        // wrong id
-        dto.setName("Bad film");
-        dto.setDescription("even don't try");
-        dto.setDuration(Duration.of(24, ChronoUnit.HOURS));
-        dto.setReleaseDate(LocalDate.of(1977, 3, 14));
+        film = new Film();
+        film.setId(1000L);                                        // wrong id
+        film.setName("Bad film");
+        film.setDescription("even don't try");
+        film.setDuration(Duration.of(24, ChronoUnit.HOURS));
+        film.setReleaseDate(LocalDate.of(1977, 3, 14));
         mpa = new Rating();
         mpa.setId(1L);
-        dto.setMpa(mpa);
+        film.setMpa(mpa);
         genre1 = new Genre();
         genre1.setId(1L);
         genre2 = new Genre();
         genre2.setId(2L);
-        genres = new ArrayList<>();
+        genres = new HashSet<>();
         genres.add(genre1);
         genres.add(genre2);
-        dto.setGenres(genres);
-        FilmApiDto finalDto8 = dto;
+        film.setGenres(genres);
+        Film finalDto8 = film;
         assertThrows(NotFoundException.class, () -> {
             filmService.updateFilm(finalDto8);
         });

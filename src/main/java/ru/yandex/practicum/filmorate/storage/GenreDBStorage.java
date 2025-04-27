@@ -28,4 +28,14 @@ public class GenreDBStorage {
         }
     }
 
+    public List<Genre> getGenreByIdCSV(String idList) {
+        String sql = GenreRowMapper.GET_GENRE_BY_ID_CSV_QUERY.replace("THE_LIST_OF_IDS", idList);
+        try {
+            return jdbc.query(sql, new GenreRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Genre not found", idList);
+        }
+    }
+
+
 }

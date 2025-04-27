@@ -1,7 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.mappers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.core.RowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,12 +26,22 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.description AS description,
                 f.release_date AS release_date,
                 f.duration AS duration,
-                f.rating_id AS rating,
+                f.rating_id AS rating_id,
+                r.name AS rating_name,
                 ARRAY_AGG(DISTINCT l.user_id) AS likes,
-                ARRAY_AGG(DISTINCT fg.genre_id) AS genres
+                CAST(
+                    JSON_ARRAYAGG(
+                        DISTINCT JSON_OBJECT(
+                            'id' : g.genre_id,
+                            'name' : g.name
+                        )
+                    ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
+                ) AS genres
             FROM films AS f
             LEFT JOIN likes AS l ON f.film_id = l.film_id
             LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
+            LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
+            LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
             GROUP BY f.film_id
             ORDER BY COUNT(DISTINCT l.user_id) DESC
             LIMIT ?;
@@ -39,12 +54,22 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.description AS description,
                 f.release_date AS release_date,
                 f.duration AS duration,
-                f.rating_id AS rating,
+                f.rating_id AS rating_id,
+                r.name AS rating_name,
                 ARRAY_AGG(DISTINCT l.user_id) AS likes,
-                ARRAY_AGG(DISTINCT fg.genre_id) AS genres
+                CAST(
+                    JSON_ARRAYAGG(
+                        DISTINCT JSON_OBJECT(
+                            'id' : g.genre_id,
+                            'name' : g.name
+                        )
+                    ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
+                ) AS genres
             FROM films AS f
             LEFT JOIN likes AS l ON f.film_id = l.film_id
             LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
+            LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
+            LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
             GROUP BY f.film_id;
             """;
 
@@ -55,30 +80,23 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.description AS description,
                 f.release_date AS release_date,
                 f.duration AS duration,
-                f.rating_id AS rating,
+                f.rating_id AS rating_id,
+                r.name AS rating_name,
                 ARRAY_AGG(DISTINCT l.user_id) AS likes,
-                ARRAY_AGG(DISTINCT fg.genre_id) AS genres
+                CAST(
+                    JSON_ARRAYAGG(
+                        DISTINCT JSON_OBJECT(
+                            'id' : g.genre_id,
+                            'name' : g.name
+                        )
+                    ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
+                ) AS genres
             FROM films AS f
             LEFT JOIN likes AS l ON f.film_id = l.film_id
             LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
+            LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
+            LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
             WHERE f.film_id = ?
-            GROUP BY f.film_id;
-            """;
-
-    public static String GET_FILMS_BY_IDS_QUERY = """
-            SELECT
-                f.film_id AS id,
-                f.name AS name,
-                f.description AS description,
-                f.release_date AS release_date,
-                f.duration AS duration,
-                f.rating_id AS rating,
-                ARRAY_AGG(DISTINCT l.user_id) AS likes,
-                ARRAY_AGG(DISTINCT fg.genre_id) AS genres
-            FROM films AS f
-            LEFT JOIN likes AS l ON f.film_id = l.film_id
-            LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
-            WHERE f.film_id IN (THE_LINE_OF_MASK)
             GROUP BY f.film_id;
             """;
 
@@ -89,7 +107,8 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.description AS description,
                 f.release_date AS release_date,
                 f.duration AS duration,
-                f.rating_id AS rating,
+                NULL AS rating_id,
+                NULL AS rating_name,
                 NULL AS likes,
                 NULL AS genres
             FROM films AS f
@@ -137,11 +156,38 @@ public class FilmRowMapper implements RowMapper<Film> {
         film.setId(rs.getLong("id"));
         film.setName(rs.getString("name"));
         film.setDescription(rs.getString("description"));
-        if (rs.getDate("release_date") != null) film.setReleaseDate(rs.getDate("release_date").toLocalDate());
-        film.setDuration(Duration.ofMillis(rs.getLong("duration")));
-        film.setRating(rs.getLong("rating"));
+
+        if (rs.getDate("release_date") != null) {
+            film.setReleaseDate(rs.getDate("release_date").toLocalDate());
+        }
+
+        Long dbDuration = rs.getObject("duration", Long.class);
+        if (dbDuration != null) {
+            film.setDuration(Duration.ofMillis(dbDuration));
+        }
+
+        Long dbRating = rs.getObject("rating_id", Long.class);
+        if (dbRating != null) {
+            Rating filmRating = new Rating();
+            filmRating.setId(dbRating);
+            filmRating.setName(rs.getString("rating_name"));
+            film.setMpa(filmRating);
+        }
+
         film.setLikes(makeLongSet(rs.getArray("likes")));
-        film.setGenres(makeLongSet(rs.getArray("genres")));
+
+        String dbGenres = rs.getString("genres");
+        if (dbGenres != null && !dbGenres.isBlank()) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                Set<Genre> filmGenres = objectMapper.readValue(dbGenres, new TypeReference<Set<Genre>>() {
+                });
+                film.setGenres(filmGenres);
+            } catch (JsonProcessingException e) {
+                // do nothing
+            }
+
+        }
         return film;
     }
 

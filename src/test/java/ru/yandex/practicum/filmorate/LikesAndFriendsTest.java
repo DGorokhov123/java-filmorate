@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.model.FilmApiDto;
+import ru.yandex.practicum.filmorate.model.Film;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -120,7 +120,7 @@ class LikesAndFriendsTest extends HttpAbstractTest {
             String film1Json = simpleGet("/films/1");
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
-            FilmApiDto film1Dto = mapper.readValue(film1Json, FilmApiDto.class);
+            Film film1Dto = mapper.readValue(film1Json, Film.class);
             assertTrue(film1Dto.getLikes().contains(1L));
             assertTrue(film1Dto.getLikes().contains(2L));
             assertTrue(film1Dto.getLikes().contains(3L));
