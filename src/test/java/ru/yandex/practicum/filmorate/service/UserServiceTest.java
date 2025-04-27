@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserApiDto;
 import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
@@ -31,19 +32,19 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        User u1 = new User();
+        UserApiDto u1 = new UserApiDto();
         u1.setName("Dima");
         u1.setLogin("dimon");
         u1.setEmail("dima@ya.ru");
         userService.createUser(u1);
 
-        User u2 = new User();
+        UserApiDto u2 = new UserApiDto();
         u2.setName("Anna");
         u2.setLogin("anka");
         u2.setEmail("anka@ya.ru");
         userService.createUser(u2);
 
-        User u3 = new User();
+        UserApiDto u3 = new UserApiDto();
         u3.setName("Vika");
         u3.setLogin("vichka");
         u3.setEmail("victoria@ya.ru");
@@ -57,13 +58,13 @@ class UserServiceTest {
         assertTrue(userService.findFriends(3L).isEmpty());
 
         userService.addFriend(1L, 2L);
-        assertTrue(userService.findFriends(1L).stream().filter(Objects::nonNull).map(User::getId).anyMatch(l -> l == 2L));
+        assertTrue(userService.findFriends(1L).stream().filter(Objects::nonNull).map(UserApiDto::getId).anyMatch(l -> l == 2L));
         assertTrue(userService.findFriends(2L).isEmpty());
         assertTrue(userService.findFriends(3L).isEmpty());
 
         userService.addFriend(2L, 1L);
-        assertTrue(userService.findFriends(1L).stream().filter(Objects::nonNull).map(User::getId).anyMatch(l -> l == 2L));
-        assertTrue(userService.findFriends(2L).stream().filter(Objects::nonNull).map(User::getId).anyMatch(l -> l == 1L));
+        assertTrue(userService.findFriends(1L).stream().filter(Objects::nonNull).map(UserApiDto::getId).anyMatch(l -> l == 2L));
+        assertTrue(userService.findFriends(2L).stream().filter(Objects::nonNull).map(UserApiDto::getId).anyMatch(l -> l == 1L));
         assertTrue(userService.findFriends(3L).isEmpty());
 
         assertTrue(userService.findMutualFriends(1L, 2L).isEmpty());
@@ -76,8 +77,8 @@ class UserServiceTest {
         userService.addFriend(3L, 2L);
         assertTrue(userService.findMutualFriends(1L, 2L).isEmpty());
         assertTrue(userService.findMutualFriends(2L, 1L).isEmpty());
-        assertTrue(userService.findMutualFriends(1L, 3L).stream().filter(Objects::nonNull).map(User::getId).anyMatch(l -> l == 2L));
-        assertTrue(userService.findMutualFriends(3L, 1L).stream().filter(Objects::nonNull).map(User::getId).anyMatch(l -> l == 2L));
+        assertTrue(userService.findMutualFriends(1L, 3L).stream().filter(Objects::nonNull).map(UserApiDto::getId).anyMatch(l -> l == 2L));
+        assertTrue(userService.findMutualFriends(3L, 1L).stream().filter(Objects::nonNull).map(UserApiDto::getId).anyMatch(l -> l == 2L));
         assertTrue(userService.findMutualFriends(3L, 2L).isEmpty());
         assertTrue(userService.findMutualFriends(2L, 3L).isEmpty());
 
@@ -118,8 +119,8 @@ class UserServiceTest {
 
     @Test
     void getUsers() {
-        Collection<User> users = userService.getUsers();
-        List<String> logins = users.stream().filter(Objects::nonNull).map(User::getLogin).toList();
+        Collection<UserApiDto> users = userService.getUsers();
+        List<String> logins = users.stream().filter(Objects::nonNull).map(UserApiDto::getLogin).toList();
         assertEquals(3, users.size());
         assertTrue(logins.contains("dimon"));
         assertTrue(logins.contains("anka"));
@@ -128,13 +129,13 @@ class UserServiceTest {
 
     @Test
     void userCrudOps() {
-        User user = new User();
+        UserApiDto user = new UserApiDto();
         user.setEmail("potus46@usa.gov");
         user.setLogin("biden");
         user.setName("Joe");
         user.setBirthday(LocalDate.of(1942, 11, 20));
 
-        User createdUser = userService.createUser(user);
+        UserApiDto createdUser = userService.createUser(user);
         assertEquals(user.getEmail(), createdUser.getEmail());
         assertEquals(user.getLogin(), createdUser.getLogin());
         assertEquals(user.getName(), createdUser.getName());
@@ -142,21 +143,21 @@ class UserServiceTest {
 
         Long id = createdUser.getId();
 
-        User nextUser = new User();
+        UserApiDto nextUser = new UserApiDto();
         nextUser.setId(id);
         nextUser.setEmail("potus47@usa.gov");
         nextUser.setLogin("trump");
         nextUser.setName("Donald");
         nextUser.setBirthday(LocalDate.of(1946, 6, 14));
 
-        User updatedUser = userService.updateUser(nextUser);
+        UserApiDto updatedUser = userService.updateUser(nextUser);
         assertEquals(nextUser.getId(), updatedUser.getId());
         assertEquals(nextUser.getEmail(), updatedUser.getEmail());
         assertEquals(nextUser.getLogin(), updatedUser.getLogin());
         assertEquals(nextUser.getName(), updatedUser.getName());
         assertEquals(nextUser.getBirthday(), updatedUser.getBirthday());
 
-        User receivedUser = userService.getUserById(id);
+        UserApiDto receivedUser = userService.getUserById(id);
         assertEquals(nextUser.getId(), receivedUser.getId());
         assertEquals(nextUser.getEmail(), receivedUser.getEmail());
         assertEquals(nextUser.getLogin(), receivedUser.getLogin());
@@ -170,42 +171,42 @@ class UserServiceTest {
 
         // Wrong operations
 
-        user = new User();
+        user = new UserApiDto();
         user.setEmail("bad@guy.am");
         user.setLogin("malo");
         user.setName("baka");
         user.setBirthday(LocalDate.of(2942, 11, 20));               // wrong birthdate
-        User finalUser = user;
+        UserApiDto finalUser = user;
         assertThrows(ValidationException.class, () -> {
             userService.createUser(finalUser);
         });
 
-        user = new User();
+        user = new UserApiDto();
         user.setEmail("badguy.am");                //  wrong email
         user.setLogin("malo");
         user.setName("baka");
         user.setBirthday(LocalDate.of(1942, 11, 20));
-        User finalUser1 = user;
+        UserApiDto finalUser1 = user;
         assertThrows(ValidationException.class, () -> {
             userService.createUser(finalUser1);
         });
 
-        user = new User();
+        user = new UserApiDto();
         user.setEmail("bad@guy.am");
         user.setLogin("muy malo");               // wrong login
         user.setName("baka");
         user.setBirthday(LocalDate.of(1942, 11, 20));
-        User finalUser2 = user;
+        UserApiDto finalUser2 = user;
         assertThrows(ValidationException.class, () -> {
             userService.createUser(finalUser2);
         });
 
-        user = new User();
+        user = new UserApiDto();
         user.setEmail("dima@ya.ru");       // duplicate email
         user.setLogin("malo");
         user.setName("baka");
         user.setBirthday(LocalDate.of(1942, 11, 20));
-        User finalUser3 = user;
+        UserApiDto finalUser3 = user;
         assertThrows(ValidationException.class, () -> {
             userService.createUser(finalUser3);
         });
@@ -216,34 +217,34 @@ class UserServiceTest {
         });
 
 
-        user = new User();                       // update without id
+        user = new UserApiDto();                       // update without id
         user.setEmail("bad@guy.am");
         user.setLogin("malo");
         user.setName("baka");
         user.setBirthday(LocalDate.of(1942, 11, 20));
-        User finalUser4 = user;
+        UserApiDto finalUser4 = user;
         assertThrows(IllegalArgumentException.class, () -> {
             userService.updateUser(finalUser4);
         });
 
-        user = new User();
+        user = new UserApiDto();
         user.setId(2L);
         user.setEmail("dima@ya.ru");            // update duplicate email
         user.setLogin("malo");
         user.setName("baka");
         user.setBirthday(LocalDate.of(1942, 11, 20));
-        User finalUser5 = user;
+        UserApiDto finalUser5 = user;
         assertThrows(ValidationException.class, () -> {
             userService.updateUser(finalUser5);
         });
 
-        user = new User();
+        user = new UserApiDto();
         user.setId(2000L);                   // update with wrong id
         user.setEmail("bad@guy.am");
         user.setLogin("malo");
         user.setName("baka");
         user.setBirthday(LocalDate.of(1942, 11, 20));
-        User finalUser6 = user;
+        UserApiDto finalUser6 = user;
         assertThrows(NotFoundException.class, () -> {
             userService.updateUser(finalUser6);
         });

@@ -8,10 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
@@ -43,29 +40,29 @@ class FilmServiceTest {
 
     @BeforeEach
     void setUp() {
-        User u1 = new User();
+        UserApiDto u1 = new UserApiDto();
         u1.setName("Ivan");
         u1.setLogin("vanchik");
         u1.setEmail("ivan@ya.ru");
         userService.createUser(u1);
 
-        User u2 = new User();
+        UserApiDto u2 = new UserApiDto();
         u2.setName("Mark");
         u2.setLogin("marco");
         u2.setEmail("marik@ya.ru");
         userService.createUser(u2);
 
-        Film f1 = new Film();
+        FilmApiDto f1 = new FilmApiDto();
         f1.setName("Omen");
         f1.setDescription("sweet child");
         filmService.createFilm(f1);
 
-        Film f2 = new Film();
+        FilmApiDto f2 = new FilmApiDto();
         f2.setName("Terminator");
         f2.setDescription("grok 5 released");
         filmService.createFilm(f2);
 
-        Film f3 = new Film();
+        FilmApiDto f3 = new FilmApiDto();
         f3.setName("Titanic");
         f3.setDescription("he sank, she not");
         filmService.createFilm(f3);
@@ -92,8 +89,8 @@ class FilmServiceTest {
 
     @Test
     void getFilmsAndPopular() {
-        Collection<Film> films = filmService.getFilms();
-        List<String> names = films.stream().filter(Objects::nonNull).map(Film::getName).toList();
+        Collection<FilmApiDto> films = filmService.getFilms();
+        List<String> names = films.stream().filter(Objects::nonNull).map(FilmApiDto::getName).toList();
         assertEquals(3, names.size());
         assertEquals("Omen", names.get(0));
         assertEquals("Terminator", names.get(1));
@@ -103,8 +100,8 @@ class FilmServiceTest {
         filmService.addLike(3L, 2L);
         filmService.addLike(2L, 1L);
 
-        Collection<Film> popular = filmService.getPopular(1000);
-        List<String> popularNames = popular.stream().filter(Objects::nonNull).map(Film::getName).toList();
+        Collection<FilmApiDto> popular = filmService.getPopular(1000);
+        List<String> popularNames = popular.stream().filter(Objects::nonNull).map(FilmApiDto::getName).toList();
         assertEquals(3, popularNames.size());
         assertEquals("Titanic", popularNames.get(0));
         assertEquals("Terminator", popularNames.get(1));
@@ -120,7 +117,7 @@ class FilmServiceTest {
 
     @Test
     void filmCrudOps() {
-        Film film = new Film();
+        FilmApiDto film = new FilmApiDto();
         film.setName("Anora");
         film.setDescription("Slut story");
         film.setDuration(Duration.of(2, ChronoUnit.HOURS));
@@ -136,7 +133,7 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film createdFilm = filmService.createFilm(film);
+        FilmApiDto createdFilm = filmService.createFilm(film);
 
         Long id = createdFilm.getId();
 
@@ -149,7 +146,7 @@ class FilmServiceTest {
         assertEquals(film.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()),
                 createdFilm.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
 
-        Film nextFilm = new Film();
+        FilmApiDto nextFilm = new FilmApiDto();
         nextFilm.setId(id);
         nextFilm.setName("Borat");
         nextFilm.setDescription("goes to asashay");
@@ -168,7 +165,7 @@ class FilmServiceTest {
         nextFilm.setGenres(genres2);
 
         filmService.updateFilm(nextFilm);
-        Film updatedFilm = filmService.getFilmById(id);
+        FilmApiDto updatedFilm = filmService.getFilmById(id);
         assertEquals(nextFilm.getId(), updatedFilm.getId());
         assertEquals(nextFilm.getName(), updatedFilm.getName());
         assertEquals(nextFilm.getDescription(), updatedFilm.getDescription());
@@ -185,7 +182,7 @@ class FilmServiceTest {
 
         // Wrong operations
 
-        film = new Film();
+        film = new FilmApiDto();
         //dto.setName("Bad film");                                  // without name
         film.setDescription("even don't try");
         film.setDuration(Duration.of(24, ChronoUnit.HOURS));
@@ -201,12 +198,12 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film finalDto = film;
+        FilmApiDto finalDto = film;
         assertThrows(ValidationException.class, () -> {
             filmService.createFilm(finalDto);
         });
 
-        film = new Film();                             // long desc
+        film = new FilmApiDto();                             // long desc
         film.setName("Bad film");
         film.setDescription("""
                 The quick brown fox jumps over the lazy dog near the riverbank.
@@ -226,12 +223,12 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film finalDto1 = film;
+        FilmApiDto finalDto1 = film;
         assertThrows(ValidationException.class, () -> {
             filmService.createFilm(finalDto1);
         });
 
-        film = new Film();
+        film = new FilmApiDto();
         film.setName("Bad film");
         film.setDescription("even don't try");
         film.setDuration(Duration.of(24, ChronoUnit.HOURS));
@@ -247,12 +244,12 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film finalDto2 = film;
+        FilmApiDto finalDto2 = film;
         assertThrows(ValidationException.class, () -> {
             filmService.createFilm(finalDto2);
         });
 
-        film = new Film();
+        film = new FilmApiDto();
         film.setName("Bad film");
         film.setDescription("even don't try");
         film.setDuration(Duration.of(-24, ChronoUnit.HOURS));              // negative duration
@@ -268,12 +265,12 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film finalDto3 = film;
+        FilmApiDto finalDto3 = film;
         assertThrows(ValidationException.class, () -> {
             filmService.createFilm(finalDto3);
         });
 
-        film = new Film();
+        film = new FilmApiDto();
         film.setName("Bad film");
         film.setDescription("even don't try");
         film.setDuration(Duration.of(24, ChronoUnit.HOURS));
@@ -289,12 +286,12 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film finalDto4 = film;
+        FilmApiDto finalDto4 = film;
         assertThrows(NotFoundException.class, () -> {
             filmService.createFilm(finalDto4);
         });
 
-        film = new Film();
+        film = new FilmApiDto();
         film.setName("Bad film");
         film.setDescription("even don't try");
         film.setDuration(Duration.of(24, ChronoUnit.HOURS));
@@ -310,7 +307,7 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film finalDto5 = film;
+        FilmApiDto finalDto5 = film;
         assertThrows(NotFoundException.class, () -> {
             filmService.createFilm(finalDto5);
         });
@@ -321,7 +318,7 @@ class FilmServiceTest {
         });
 
 
-        film = new Film();                       // update without id
+        film = new FilmApiDto();                       // update without id
         film.setName("Bad film");
         film.setDescription("even don't try");
         film.setDuration(Duration.of(24, ChronoUnit.HOURS));
@@ -337,13 +334,13 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film finalDto6 = film;
+        FilmApiDto finalDto6 = film;
         assertThrows(IllegalArgumentException.class, () -> {
             filmService.updateFilm(finalDto6);
         });
 
 
-        film = new Film();
+        film = new FilmApiDto();
         film.setId(1L);
         //dto.setName("Bad film");                                      // update without name
         film.setDescription("even don't try");
@@ -360,13 +357,13 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film finalDto7 = film;
+        FilmApiDto finalDto7 = film;
         assertThrows(ValidationException.class, () -> {
             filmService.updateFilm(finalDto7);
         });
 
 
-        film = new Film();
+        film = new FilmApiDto();
         film.setId(1000L);                                        // wrong id
         film.setName("Bad film");
         film.setDescription("even don't try");
@@ -383,7 +380,7 @@ class FilmServiceTest {
         genres.add(genre1);
         genres.add(genre2);
         film.setGenres(genres);
-        Film finalDto8 = film;
+        FilmApiDto finalDto8 = film;
         assertThrows(NotFoundException.class, () -> {
             filmService.updateFilm(finalDto8);
         });
