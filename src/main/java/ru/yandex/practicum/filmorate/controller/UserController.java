@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserApiDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
@@ -21,27 +21,27 @@ public class UserController {
 
 
     @GetMapping
-    public Collection<User> getUsers() {
+    public Collection<UserApiDto> getUsers() {
         return userService.getUsers();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public UserApiDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @DeleteMapping("/{id}")
-    public User deleteUserById(@PathVariable Long id) {
+    public UserApiDto deleteUserById(@PathVariable Long id) {
         return userService.deleteUserById(id);
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody User user) {
+    public UserApiDto createUser(@Valid @RequestBody UserApiDto user) {
         return userService.createUser(user);
     }
 
     @PutMapping
-    public User updateUser(@Valid @RequestBody User user) {
+    public UserApiDto updateUser(@Valid @RequestBody UserApiDto user) {
         return userService.updateUser(user);
     }
 
@@ -62,12 +62,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/friends")
-    public Collection<User> findFriends(@PathVariable Long userId) {
+    public Collection<UserApiDto> findFriends(@PathVariable Long userId) {
         return userService.findFriends(userId);
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
-    public Collection<User> findMutualFriends(@PathVariable Long userId, @PathVariable Long otherId) {
+    public Collection<UserApiDto> findMutualFriends(@PathVariable Long userId, @PathVariable Long otherId) {
         return userService.findMutualFriends(userId, otherId);
     }
 
