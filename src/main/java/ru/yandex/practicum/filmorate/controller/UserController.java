@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.FilmApiDto;
 import ru.yandex.practicum.filmorate.model.UserApiDto;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
@@ -15,6 +17,7 @@ import java.util.Collection;
 public class UserController {
 
     private final UserService userService;
+    private final FilmService filmService;
 
 
     // STORAGE OPERATIONS
@@ -69,6 +72,15 @@ public class UserController {
     @GetMapping("/{userId}/friends/common/{otherId}")
     public Collection<UserApiDto> findMutualFriends(@PathVariable Long userId, @PathVariable Long otherId) {
         return userService.findMutualFriends(userId, otherId);
+    }
+
+
+    // RECOMMENDATIONS
+
+
+    @GetMapping("/{userId}/recommendations")
+    public Collection<FilmApiDto> findRecommendations(@PathVariable Long userId) {
+        return filmService.findRecommendations(userId);
     }
 
 }
