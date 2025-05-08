@@ -34,7 +34,7 @@ public class FilmRowMapper implements RowMapper<Film> {
      */
     public static String GET_RECOMMENDED_FILMS_QUERY = """
             WITH target AS (
-                SELECT CAST(? AS INTEGER) AS target_id
+                SELECT CAST(? AS BIGINT) AS target_id
             ),
             intersections AS (
                 SELECT l2.user_id, COUNT(*) AS intersection_count
