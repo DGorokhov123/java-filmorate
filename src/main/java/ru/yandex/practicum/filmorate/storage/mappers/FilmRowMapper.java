@@ -19,23 +19,43 @@ import java.util.stream.Collectors;
 
 public class FilmRowMapper implements RowMapper<Film> {
 
+    /**
+     * Рекомендации фильмов на основе коэффициента подобия Жаккара
+     * временные таблицы:
+     * target - хранит принимаемый параметр userId для использования в нескольких местах запроса
+     * intersections - количество общих лайков по каждому пользователю, где они есть
+     * likecounts - количество лайков каждого пользователя
+     * targetlikecount - количество лайков целевого пользователя
+     * neighbours - близкие "соседи" с максимальным коэффициентом подобия (в процентах)
+     * итоговый запрос:
+     * для каждого фильма, у которого есть лайки от "соседей" (за вычетом тех, что лайкнул целевой юзер)
+     * расчитывается сумма коэффицентов подобия по всем соседским лайкам в итоговый балл с сортировкой
+     *  + сразу же подгружаем данные для выгрузки фильмов в нужном для RowMapper формате
+     */
     public static String GET_RECOMMENDED_FILMS_QUERY = """
-            WITH neighbours AS (
-                WITH intersections AS (
-                    SELECT l2.user_id, COUNT(*) AS intersection_count
-                    FROM likes AS l1
-                    JOIN likes AS l2 ON	l1.film_id = l2.film_id	AND l1.user_id != l2.user_id
-                    WHERE l1.user_id = ?
-                    GROUP BY l2.user_id
-                ),
-                likecounts AS (
-                    SELECT l.user_id, COUNT(*) AS like_count FROM likes AS l GROUP BY l.user_id
-                )
+            WITH target AS (
+                SELECT ? AS target_id
+            ),
+            intersections AS (
+                SELECT l2.user_id, COUNT(*) AS intersection_count
+                FROM likes AS l1
+                JOIN likes AS l2 ON l1.film_id = l2.film_id AND l1.user_id != l2.user_id
+                WHERE l1.user_id = (SELECT target_id FROM target)
+                GROUP BY l2.user_id
+            ),
+            likecounts AS (
+                SELECT user_id, COUNT(*) AS like_count FROM likes GROUP BY user_id
+            ),
+            targetlikecount AS (
+                SELECT COUNT(*) AS target_like_count FROM LIKES WHERE user_id = (SELECT target_id FROM target)
+            ),
+            neighbours AS (
                 SELECT
             	    i.user_id,
-            	    i.intersection_count * 100 / ( (SELECT COUNT(*)	FROM LIKES WHERE user_id = ?) + u.like_count - i.intersection_count ) AS similarity
+            	    i.intersection_count * 100 / ( t.target_like_count + lc.like_count - i.intersection_count ) AS similarity
                 FROM intersections AS i
-                JOIN likecounts u ON i.user_id = u.user_id
+                JOIN likecounts lc ON i.user_id = lc.user_id
+                CROSS JOIN targetlikecount AS t
                 LIMIT 20
             )
             SELECT
@@ -48,12 +68,12 @@ public class FilmRowMapper implements RowMapper<Film> {
                 r.name AS rating_name,
                 ARRAY_AGG(DISTINCT l2.user_id) AS likes,
                 CAST(
-                    JSON_ARRAYAGG(
-                        DISTINCT JSON_OBJECT(
-                            'id' : g.genre_id,
-                            'name' : g.name
-                        )
-                    ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
+                  JSON_ARRAYAGG(
+                    DISTINCT JSON_OBJECT(
+                      'id' : g.genre_id,
+                      'name' : g.name
+                    )
+                  ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
                 ) AS genres,
             	SUM(n.similarity) AS score
             FROM likes AS l
@@ -63,7 +83,7 @@ public class FilmRowMapper implements RowMapper<Film> {
             LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
             LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
             LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
-            WHERE l.film_id NOT IN (SELECT film_id FROM likes WHERE user_id = ?)
+            WHERE l.film_id NOT IN (SELECT film_id FROM likes WHERE user_id = (SELECT target_id FROM target))
             GROUP BY l.film_id
             ORDER BY score DESC
             """;
