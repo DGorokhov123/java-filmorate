@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
 @Data
+@Builder
 public class ReviewApiDto {
 
     private Long reviewId;
@@ -15,11 +16,9 @@ public class ReviewApiDto {
     @NonNull
     private Boolean isPositive;
 
-    @Positive
     @NonNull
     private Long userId;
 
-    @Positive
     @NonNull
     private Long filmId;
 

@@ -8,16 +8,12 @@ import java.sql.SQLException;
 
 public class ReviewRowMapper implements RowMapper<Review> {
 
-    public static final String CREATE_REVIEW_QUERY = """
-            INSERT INTO REVIEWS (content, is_positive, user_id, film_id, useful)
-            VALUES (?, ?, ?, ?, ?);
-            """;
+    public static final String CREATE_REVIEW_QUERY =
+            "INSERT INTO REVIEWS (content, is_positive, user_id, film_id, useful) VALUES (?, ?, ?, ?, ?);";
 
 
-    public static final String GET_REVIEW_BY_ID_QUERY = """
-            SELECT FROM REVIEWS (review_id, content, is_positive, user_id, film_id, useful)
-            VALUES (?, ?, ?, ?, ?, ?);
-            """;
+    public static final String GET_REVIEW_BY_ID_QUERY =
+            "SELECT  review_id, content, is_positive, user_id, film_id, useful FROM REVIEWS WHERE REVIEW_ID = ?;";
 
     public static final String UPDATE_REVIEW_QUERY = "UPDATE REVIEWS " +
             "SET content = ?, is_positive = ?, user_id = ?, film_id = ?, useful = ?" +
@@ -27,29 +23,27 @@ public class ReviewRowMapper implements RowMapper<Review> {
 
 
     public static final String GET_REVIEWS_BY_FILM_ID_QUERY = "SELECT " +
-            "review_id, content, is_positive, user_id, film_id, useful" +
-            "FROM REVIEWS WHERE film_id = ? LIMIT = ?;";
+            "review_id, content, is_positive, user_id, film_id, useful " +
+            "FROM REVIEWS WHERE film_id = ? ORDER BY useful DESC LIMIT ? ;";
 
 
     public static final String GET_ALL_REVIEWS_QUERY = "SELECT " +
             "review_id, content, is_positive, user_id, film_id, useful" +
-            "FROM REVIEWS LIMIT = ?;";
+            "FROM REVIEWS ORDER BY useful DESC LIMIT = ?;";
 
     public static final String UPDATE_REVIEW_USEFUL_QUERY = "UPDATE REVIEWS " +
-            "useful = ?" +
+            "SET useful = ?" +
             "WHERE review_id = ?;";
 
     @Override
     public Review mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Review review = new Review();
-
-        review.setReviewId(rs.getLong("REVIEW_ID"));
-        review.setContent(rs.getString("CONTENT"));
-        review.setIsPositive(rs.getBoolean("IS_POSITIVE"));
-        review.setUserId(rs.getLong("USER_ID"));
-        review.setFilmId(rs.getLong("FILM_ID"));
-        review.setUseful(rs.getInt("USEFUL"));
-
-        return review;
+        return Review.builder()
+                .reviewId(rs.getLong("REVIEW_ID"))
+                .content(rs.getString("CONTENT"))
+                .isPositive(rs.getBoolean("IS_POSITIVE"))
+                .userId(rs.getLong("USER_ID"))
+                .filmId(rs.getLong("FILM_ID"))
+                .useful(rs.getInt("USEFUL"))
+                .build();
     }
 }

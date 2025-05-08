@@ -67,11 +67,16 @@ public class ReviewsDBStorage {
                     reviewToUpdate.getIsPositive(),
                     reviewToUpdate.getUserId(),
                     reviewToUpdate.getFilmId(),
-                    reviewToUpdate.getReviewId());
+                    reviewToUpdate.getReviewId(),
+                    reviewToUpdate.getUseful());
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("Review referential integrity error", reviewToUpdate);
         }
         return reviewToUpdate;
+    }
+
+    public Review getReviewById(Long id) {
+        return checkAndReturnReviewById(id);
     }
 
 
@@ -87,10 +92,6 @@ public class ReviewsDBStorage {
 
         filmStorage.checkFilmById(filmId);
 
-        if (count == 0) {
-            count = 10; // DEFAULT_MAX_NUMBER_OF_REVIEWS_OF_FILM
-        }
-
         if (filmId == null || filmId == 0) {
             return jdbc.query(ReviewRowMapper.GET_ALL_REVIEWS_QUERY, new ReviewRowMapper(), count);
         }
@@ -100,11 +101,11 @@ public class ReviewsDBStorage {
 
     public Review updateReviewUseful(Long reviewId, Integer newUseful) {
 
-        Review review = checkAndReturnReviewById(reviewId);
+        checkAndReturnReviewById(reviewId);
 
-        jdbc.update(ReviewRowMapper.UPDATE_REVIEW_USEFUL_QUERY);
+        jdbc.update(ReviewRowMapper.UPDATE_REVIEW_USEFUL_QUERY, newUseful, reviewId);
 
-        return review;
+        return checkAndReturnReviewById(reviewId);
     }
 
 
