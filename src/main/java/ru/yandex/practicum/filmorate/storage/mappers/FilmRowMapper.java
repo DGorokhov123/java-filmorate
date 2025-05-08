@@ -33,7 +33,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 )
                 SELECT
             	    i.user_id,
-            	    i.intersection_count * 100 / ( (SELECT COUNT(*)	FROM LIKES WHERE user_id = 1) + u.like_count - i.intersection_count ) AS similarity
+            	    i.intersection_count * 100 / ( (SELECT COUNT(*)	FROM LIKES WHERE user_id = ?) + u.like_count - i.intersection_count ) AS similarity
                 FROM intersections AS i
                 JOIN likecounts u ON i.user_id = u.user_id
                 LIMIT 20
