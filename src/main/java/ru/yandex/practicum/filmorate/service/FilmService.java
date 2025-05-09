@@ -23,6 +23,7 @@ public class FilmService {
     private final UserStorage userStorage;
     private final RatingService ratingService;
     private final GenreService genreService;
+    private final EventService eventService;
 
     private final FilmValidator filmCreateValidator = FilmValidatorBuilder.builder()
             .register(new FilmNullValidator())
@@ -100,6 +101,7 @@ public class FilmService {
         userStorage.checkUserById(userId);
         filmStorage.checkFilmById(filmId);
         filmStorage.addLike(filmId, userId);
+        eventService.addLikeEvent(filmId, userId);
         log.debug("Added like to film {} by user {}", filmId, userId);
     }
 
@@ -109,6 +111,7 @@ public class FilmService {
         userStorage.checkUserById(userId);
         filmStorage.checkFilmById(filmId);
         filmStorage.removeLike(filmId, userId);
+        eventService.removeLikeEvent(filmId, userId);
         log.debug("Removed like from film {} by user {}", filmId, userId);
     }
 

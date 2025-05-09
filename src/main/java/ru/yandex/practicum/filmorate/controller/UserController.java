@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.EventApiDto;
 import ru.yandex.practicum.filmorate.model.FilmApiDto;
 import ru.yandex.practicum.filmorate.model.UserApiDto;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -18,6 +20,7 @@ public class UserController {
 
     private final UserService userService;
     private final FilmService filmService;
+    private final EventService eventService;
 
 
     // STORAGE OPERATIONS
@@ -81,6 +84,15 @@ public class UserController {
     @GetMapping("/{userId}/recommendations")
     public Collection<FilmApiDto> findRecommendations(@PathVariable Long userId) {
         return filmService.findRecommendations(userId);
+    }
+
+
+    // FEED
+
+
+    @GetMapping("/{userId}/feed")
+    public Collection<EventApiDto> getFeed(@PathVariable Long userId) {
+        return eventService.getFeed(userId);
     }
 
 }
