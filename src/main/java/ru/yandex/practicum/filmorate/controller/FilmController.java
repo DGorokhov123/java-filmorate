@@ -66,4 +66,15 @@ public class FilmController {
         return filmService.getPopular(count);
     }
 
+    // ADD-DIRECTOR FEATURE
+
+    @GetMapping("/director/{directorId}")
+    public Collection<FilmApiDto> getDirectorFilm(@PathVariable("directorId") Integer id,
+                                                  @RequestParam(value = "sortBy",
+                                                          defaultValue = "year", required = false) String sortBy) {
+        return filmService.getDirectorFilm(id, sortBy);
+
+    }
+
+
 }

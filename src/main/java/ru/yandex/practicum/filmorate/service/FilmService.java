@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -119,5 +120,14 @@ public class FilmService {
                 .map(FilmMapper::toDto)
                 .toList();
     }
+
+    // ADD-DIRECTOR FEATURE
+
+    public Collection<FilmApiDto> getDirectorFilm(Integer id, String sortBy) {
+        return filmStorage.getDirectorFilm(id, sortBy).stream()
+                .map(FilmMapper::toDto)
+                .toList();
+    }
+
 
 }

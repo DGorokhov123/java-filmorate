@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Repository
@@ -107,6 +108,17 @@ public class FilmDbStorage implements FilmStorage {
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("Genre Referential integrity error", film);
         }
+
+        //add-director feature
+        try {
+            film.getDirectors().stream()
+                    .filter(Objects::nonNull)
+                    .forEach(director ->
+                            jdbc.update(FilmRowMapper.ADD_FILM_DIRECTOR_QUERY, film.getId(), director.getId()));
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException("Director Referential integrity error", film);
+        }
+
         return film;
     }
 
@@ -134,6 +146,18 @@ public class FilmDbStorage implements FilmStorage {
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("Film referential integrity error", film);
         }
+
+        // add-director feature
+        try {
+            jdbc.update(FilmRowMapper.REMOVE_FILM_DIRECTOR_QUERY, film.getId());
+            film.getDirectors().stream()
+                    .filter(Objects::nonNull)
+                    .forEach(director ->
+                            jdbc.update(FilmRowMapper.ADD_FILM_DIRECTOR_QUERY, film.getId(), director.getId()));
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException("Film referential integrity error", film);
+        }
+
         return film;
     }
 
@@ -156,4 +180,9 @@ public class FilmDbStorage implements FilmStorage {
         return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY, new FilmRowMapper(), count);
     }
 
+    @Override
+    //TODO
+    public Collection<Film> getDirectorFilm(Integer id, String sortBy) {
+        return jdbc.query(FilmRowMapper.GET_FILMS_WITH_DIRECTORS_QUERY, new FilmRowMapper(), id);
+    }
 }

@@ -59,34 +59,34 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler({
-            IllegalArgumentException.class,
-            MethodArgumentTypeMismatchException.class,
-            HttpMessageNotReadableException.class
-    })
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIllegalArgument(RuntimeException e, HttpServletRequest request) {
-        log.debug("Illegal Argument: {}", e.getMessage());
-        return new ErrorResponse(
-                Instant.now(),
-                HttpStatus.BAD_REQUEST,
-                "Illegal Argument",
-                e.getMessage(),
-                request.getRequestURI()
-        );
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleRuntimeException(RuntimeException e, HttpServletRequest request) {
-        log.debug("Internal Server Error: {}", e.getMessage());
-        return new ErrorResponse(
-                Instant.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Unexpected " + e.getClass().getSimpleName(),
-                e.getMessage(),
-                request.getRequestURI()
-        );
-    }
+//    @ExceptionHandler({
+//            IllegalArgumentException.class,
+//            MethodArgumentTypeMismatchException.class,
+//            HttpMessageNotReadableException.class
+//    })
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse handleIllegalArgument(RuntimeException e, HttpServletRequest request) {
+//        log.debug("Illegal Argument: {}", e.getMessage());
+//        return new ErrorResponse(
+//                Instant.now(),
+//                HttpStatus.BAD_REQUEST,
+//                "Illegal Argument",
+//                e.getMessage(),
+//                request.getRequestURI()
+//        );
+//    }
+//
+//    @ExceptionHandler(RuntimeException.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse handleRuntimeException(RuntimeException e, HttpServletRequest request) {
+//        log.debug("Internal Server Error: {}", e.getMessage());
+//        return new ErrorResponse(
+//                Instant.now(),
+//                HttpStatus.INTERNAL_SERVER_ERROR,
+//                "Unexpected " + e.getClass().getSimpleName(),
+//                e.getMessage(),
+//                request.getRequestURI()
+//        );
+//    }
 
 }
