@@ -181,8 +181,16 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    //TODO
     public Collection<Film> getDirectorFilm(Integer id, String sortBy) {
-        return jdbc.query(FilmRowMapper.GET_FILMS_WITH_DIRECTORS_QUERY, new FilmRowMapper(), id);
+        switch (sortBy) {
+            case "year":
+                sortBy = "ORDER BY EXTRACT(YEAR FROM f.release_date) ASC;";
+                break;
+            case "likes":
+                sortBy = "ORDER BY COUNT( DISTINCT l.user_id) DESC;";
+                break;
+        }
+        return jdbc.query(FilmRowMapper.GET_FILMS_WITH_DIRECTORS_QUERY + sortBy,
+                new FilmRowMapper(), id);
     }
 }

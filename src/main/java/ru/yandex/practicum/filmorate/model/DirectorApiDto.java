@@ -11,7 +11,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class DirectorApiDto {
 
-    private Integer id;
+    private Long id;
 
     @NotNull
     private String name;

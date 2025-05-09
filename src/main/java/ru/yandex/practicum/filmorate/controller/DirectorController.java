@@ -28,7 +28,7 @@ public class DirectorController {
 
     @GetMapping("/{id}")
     // Получение режиссёра по id
-    public DirectorApiDto findById(@PathVariable("id") int id) {
+    public DirectorApiDto findById(@PathVariable("id") long id) {
         return directorService.findDirectorById(id);
     }
 
@@ -46,7 +46,7 @@ public class DirectorController {
 
     @DeleteMapping("/{id}")
     // Удаление режиссёра
-    public DirectorApiDto delete(@PathVariable("id") int id) {
+    public DirectorApiDto delete(@PathVariable("id") long id) {
         return directorService.deleteDirector(id);
     }
 

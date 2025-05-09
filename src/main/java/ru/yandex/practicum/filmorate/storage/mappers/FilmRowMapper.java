@@ -188,7 +188,6 @@ public class FilmRowMapper implements RowMapper<Film> {
             DELETE FROM film_directors WHERE film_id = ?;
             """;
 
-    //TODO
     public static String GET_FILMS_WITH_DIRECTORS_QUERY = """
             SELECT
                 f.film_id AS id,
@@ -224,7 +223,6 @@ public class FilmRowMapper implements RowMapper<Film> {
                 LEFT JOIN directors AS d ON d.director_id = fd.director_id
                 WHERE d.director_id = ?
                 GROUP BY f.film_id
-                ORDER BY COUNT( DISTINCT l.user_id) DESC;
             """;
 
 
@@ -270,10 +268,6 @@ public class FilmRowMapper implements RowMapper<Film> {
 
         //add-directors feature
         String dbDirectors = rs.getString("directors");
-
-        //TODO
-        System.out.println(dbDirectors);
-
         if (dbDirectors != null && !dbDirectors.isBlank()) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
@@ -288,10 +282,6 @@ public class FilmRowMapper implements RowMapper<Film> {
             }
 
         }
-
-        //TODO
-        System.out.println(film);
-        System.out.println(FilmMapper.toDto(film));
 
         return film;
     }

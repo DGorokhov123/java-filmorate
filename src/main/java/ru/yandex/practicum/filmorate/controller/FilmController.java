@@ -67,7 +67,7 @@ public class FilmController {
     }
 
     // ADD-DIRECTOR FEATURE
-
+    // GET /films/director/{directorId}?sortBy=[year,likes]
     @GetMapping("/director/{directorId}")
     public Collection<FilmApiDto> getDirectorFilm(@PathVariable("directorId") Integer id,
                                                   @RequestParam(value = "sortBy",

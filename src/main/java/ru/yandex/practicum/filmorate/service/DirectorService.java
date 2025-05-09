@@ -24,7 +24,7 @@ public class DirectorService {
                 .toList();
     }
 
-    public DirectorApiDto findDirectorById(int id) {
+    public DirectorApiDto findDirectorById(long id) {
         return DirectorMapper.toApiDto(directorDbStorage.findDirectorById(id));
     }
 
@@ -38,7 +38,7 @@ public class DirectorService {
                 DirectorMapper.toDirector(directorApiDto)));
     }
 
-    public DirectorApiDto deleteDirector(int id) {
+    public DirectorApiDto deleteDirector(long id) {
         return  DirectorMapper.toApiDto(directorDbStorage.deleteDirector(id));
     }
 

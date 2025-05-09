@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
-@AllArgsConstructor
+// Применение Jackson Library для десериализации объекта из JSON не совместимо с применением
+// аннотаций  @Builder или @AllArgsConstructor, которые влияют на создание "пустого" контсруктора
 public class Director {
-    private Integer id;
+    private Long id;
     private String name;
+
 }

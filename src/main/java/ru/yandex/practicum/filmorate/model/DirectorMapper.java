@@ -10,10 +10,10 @@ public class DirectorMapper {
     }
 
     public static Director toDirector(DirectorApiDto directorApiDto) {
-        return Director.builder()
-                .id(directorApiDto.getId())
-                .name(directorApiDto.getName())
-                .build();
+        Director director = new Director();
+        director.setId(directorApiDto.getId());
+        director.setName(directorApiDto.getName());
+        return director;
     }
 
 }

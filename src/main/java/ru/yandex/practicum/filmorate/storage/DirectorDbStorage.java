@@ -44,7 +44,7 @@ public class DirectorDbStorage {
     }
 
     //  Получение режиссёра по id
-    public Director findDirectorById(int id) {
+    public Director findDirectorById(long id) {
         log.trace("запрос на получение объекта Режиссер с ID - {}", id);
         try {
             Director director = jdbc.queryForObject(FIND_BY_ID_DIRECTOR, directorRowMapper, id);
@@ -70,7 +70,7 @@ public class DirectorDbStorage {
             ps.setString(1, director.getName());
             return ps;
         }, keyHolder);
-        Integer id = keyHolder.getKeyAs(Integer.class);
+        Long id = keyHolder.getKeyAs(Long.class);
         // Возвращаем id нового пользователя
         if (id != null) {
             director.setId(id);
@@ -97,7 +97,7 @@ public class DirectorDbStorage {
     }
 
     // Удаление режиссёра
-    public Director deleteDirector(int id) {
+    public Director deleteDirector(long id) {
         log.trace("запрос на удление Режиссера с ID - {}", id);
         // если директор не найдется по ID, будет NotFoundException
         Director director = findDirectorById(id);
