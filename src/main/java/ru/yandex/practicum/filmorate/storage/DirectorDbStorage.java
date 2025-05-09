@@ -99,7 +99,7 @@ public class DirectorDbStorage {
     // Удаление режиссёра
     public Director deleteDirector(int id) {
         log.trace("запрос на удление Режиссера с ID - {}", id);
-        // если директор не найдется, будет NotFoundException
+        // если директор не найдется по ID, будет NotFoundException
         Director director = findDirectorById(id);
         log.debug("запись с ID - {} будет удалена", id);
         int deletedRows = jdbc.update(DELETE_DIRECTOR, id);
