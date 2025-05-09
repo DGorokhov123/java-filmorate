@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.DirectorApiDto;
@@ -33,21 +34,19 @@ public class DirectorController {
 
     @PostMapping
     // Создание режиссёра
-    // TODO @Valid ?
-    public DirectorApiDto create(@RequestBody DirectorApiDto directorApiDto) {
+    public DirectorApiDto create(@Valid @RequestBody DirectorApiDto directorApiDto) {
         return directorService.createDirector(directorApiDto);
     }
 
     @PutMapping
     // Изменение режиссёра
-    // TODO @Valid ?
-    public DirectorApiDto update(@RequestBody DirectorApiDto directorApiDto) {
+    public DirectorApiDto update(@Valid @RequestBody DirectorApiDto directorApiDto) {
         return directorService.updateDirector(directorApiDto);
     }
 
     @DeleteMapping("/{id}")
     // Удаление режиссёра
-    public DirectorApiDto delete(@PathVariable("id") int id){
+    public DirectorApiDto delete(@PathVariable("id") int id) {
         return directorService.deleteDirector(id);
     }
 
