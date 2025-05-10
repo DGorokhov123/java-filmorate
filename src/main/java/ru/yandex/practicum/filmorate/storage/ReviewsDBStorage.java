@@ -109,7 +109,7 @@ public class ReviewsDBStorage {
         checkAndReturnReviewById(reviewId);
 
         try {
-            return  Optional.ofNullable(
+            return Optional.ofNullable(
                     jdbc.queryForObject(ReviewRowMapper.GET_USER_REVIEW_REACTIONS_QUERY, new ReviewUserLikeMapper(), reviewId, userId)
             );
         } catch (EmptyResultDataAccessException e) {
@@ -133,12 +133,11 @@ public class ReviewsDBStorage {
     }
 
 
-
     public void deleteUserReaction(Long reviewId, Long userId) {
         userStorage.checkUserById(userId);
         checkAndReturnReviewById(reviewId);
 
-        jdbc.update(ReviewRowMapper.DELETE_USER_REACTION_QUERY, reviewId , userId);
+        jdbc.update(ReviewRowMapper.DELETE_USER_REACTION_QUERY, reviewId, userId);
 
     }
 
