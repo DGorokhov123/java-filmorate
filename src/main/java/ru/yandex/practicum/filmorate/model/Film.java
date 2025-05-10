@@ -19,4 +19,7 @@ public class Film {
     private Rating mpa;
     private Set<Genre> genres = new HashSet<>();
 
+    //add-director feature
+    private Set<Director> directors = new HashSet<>();
+
 }

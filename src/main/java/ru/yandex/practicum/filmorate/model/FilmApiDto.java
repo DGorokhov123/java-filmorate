@@ -33,4 +33,6 @@ public class FilmApiDto {
 
     private Set<Genre> genres = new HashSet<>();
 
+    //add-director feature
+    private Set<Director> directors = new HashSet<>();
 }

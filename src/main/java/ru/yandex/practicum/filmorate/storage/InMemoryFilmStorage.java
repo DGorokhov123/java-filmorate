@@ -85,4 +85,12 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.keySet().stream().mapToLong(id -> id).max().orElse(0) + 1;
     }
 
+
+    //add-director feature
+    @Override
+    public Collection<Film> getDirectorFilm(Integer id, String sortBy) {
+        return null;
+    }
+
+
 }
