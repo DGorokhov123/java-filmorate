@@ -163,12 +163,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> findFilmsByDirector(String query) {
-        return List.of(); // TODO когда будет режиссер
+        return jdbc.query(FilmRowMapper.SEARCH_FILMS_BY_TITLE_QUERY, new FilmRowMapper(), query);
     }
 
     @Override
     public Collection<Film> findFilmsByTitle(String query) {
-        return jdbc.query(FilmRowMapper.SEARCH_FILMS_BY_TITLE_QUERY, new FilmRowMapper(), query);
+        return jdbc.query(FilmRowMapper.SEARCH_FILMS_BY_DIRECTOR_QUERY, new FilmRowMapper(), query);
     }
 
     @Override
