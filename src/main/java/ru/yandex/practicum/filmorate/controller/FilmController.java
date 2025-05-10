@@ -77,4 +77,14 @@ public class FilmController {
     }
 
 
+
+    // SEARCH
+
+    @GetMapping("/search")
+    public Collection<FilmApiDto> searchFilms(
+            @RequestParam String query,
+            @RequestParam String by) {
+        return filmService.searchFilms(query, by);
+    }
+
 }

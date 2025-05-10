@@ -28,7 +28,7 @@ public class FilmRowMapper implements RowMapper<Film> {
      * итоговый запрос:
      * для каждого фильма, у которого есть лайки от "соседей" (за вычетом тех, что лайкнул целевой юзер)
      * расчитывается сумма коэффицентов подобия по всем соседским лайкам в итоговый балл с сортировкой
-     *  + сразу же подгружаем данные для выгрузки фильмов в нужном для RowMapper формате
+     * + сразу же подгружаем данные для выгрузки фильмов в нужном для RowMapper формате
      */
     public static String GET_RECOMMENDED_FILMS_QUERY = """
             WITH target AS (
@@ -294,6 +294,32 @@ public class FilmRowMapper implements RowMapper<Film> {
                 GROUP BY f.film_id
             """;
 
+    public static String SEARCH_FILMS_BY_TITLE_QUERY = """
+                SELECT
+                                f.film_id AS id,
+                                f.name AS name,
+                                f.description AS description,
+                                f.release_date AS release_date,
+                                f.duration AS duration,
+                                f.rating_id AS rating_id,
+                                r.name AS rating_name,
+                                ARRAY_AGG(DISTINCT l.user_id) AS likes,
+                                CAST(
+                                    JSON_ARRAYAGG(
+                                        DISTINCT JSON_OBJECT(
+                                            'id' : g.genre_id,
+                                            'name' : g.name
+                                        )
+                                    ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
+                                ) AS genres
+                            FROM films AS f
+                            LEFT JOIN likes AS l ON f.film_id = l.film_id
+                            LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
+                            LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
+                            LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
+                            WHERE LOWER(f.name) LIKE CONCAT('%%', ?, '%%')
+                            GROUP BY f.film_id;
+            """;
 
     @Override
     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {

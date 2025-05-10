@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmApiDto;
@@ -10,9 +11,8 @@ import ru.yandex.practicum.filmorate.service.validators.film.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,6 +40,7 @@ public class FilmService {
             .register(new FilmReleaseDateValidator())
             .register(new FilmDurationValidator())
             .build();
+    private final AbstractEntityManagerFactoryBean abstractEntityManagerFactoryBean;
 
 
     // STORAGE OPERATIONS
@@ -143,4 +144,49 @@ public class FilmService {
     }
 
 
+    public Collection<FilmApiDto> searchFilms(String query, String by) {
+        if (query == null || query.isBlank()) {
+            // Обработка пустого запроса
+            return Collections.emptyList();
+        }
+
+        Set<Film> films = new HashSet<>();
+
+
+        if (by == null || by.isBlank()) {
+            // По умолчанию ищем только по названию
+            films.addAll(filmStorage.findFilmsByTitle(query));
+            return films.stream()
+                    .filter(Objects::nonNull)
+                    .map(FilmMapper::toDto)
+                    .toList();
+        }
+
+        Set<String> validParams = new HashSet<>(Arrays.asList("title", "director"));
+        Set<String> searchFields = new HashSet<>(Arrays.asList(by.split(",")));
+
+        // Удалить пробелы по краям каждого элемента
+        searchFields = searchFields.stream()
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+
+        // Проверка: все ли параметры допустимы
+        if (!validParams.containsAll(searchFields)) {
+            throw new IllegalArgumentException("Параметр 'by' может содержать только 'title' или 'director'");
+        }
+
+
+        if (searchFields.contains("title")) {
+            films.addAll(filmStorage.findFilmsByTitle(query));
+        }
+        if (searchFields.contains("director")) {
+            films.addAll(filmStorage.findFilmsByDirector(query));
+        }
+
+        return films.stream()
+                .filter(Objects::nonNull)
+                .map(FilmMapper::toDto)
+                .toList();
+    }
 }

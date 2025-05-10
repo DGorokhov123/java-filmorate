@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmApiDto;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,4 +31,7 @@ public interface FilmStorage {
     //add-director feature
     Collection<Film> getDirectorFilm(Integer id, String sortBy);
 
+    Collection<Film> findFilmsByDirector(String query);
+
+    Collection<Film> findFilmsByTitle(String query);
 }
