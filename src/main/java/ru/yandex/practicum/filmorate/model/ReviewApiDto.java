@@ -22,6 +22,6 @@ public class ReviewApiDto {
     @NonNull
     private Long filmId;
 
-    int useful;
+    private int useful;
 
 }

@@ -10,11 +10,10 @@ public class ReviewMapper {
                 .isPositive(reviewApiDto.getIsPositive())
                 .userId(reviewApiDto.getUserId())
                 .filmId(reviewApiDto.getFilmId())
-                .useful(reviewApiDto.getUseful())
                 .build();
     }
 
-    public static ReviewApiDto toReviewApiDto(Review review) {
+    public static ReviewApiDto toReviewApiDto(Review review, Integer useFul) {
 
         return ReviewApiDto.builder()
                 .reviewId(review.getReviewId())
@@ -22,7 +21,7 @@ public class ReviewMapper {
                 .isPositive(review.getIsPositive())
                 .userId(review.getUserId())
                 .filmId(review.getFilmId())
-                .useful(review.getUseful())
+                .useful(useFul)
                 .build();
     }
 }

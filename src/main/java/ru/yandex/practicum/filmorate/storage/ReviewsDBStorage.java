@@ -9,12 +9,15 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.ReviewUserLike;
 import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.storage.mappers.ReviewRowMapper;
+import ru.yandex.practicum.filmorate.storage.mappers.ReviewUserLikeMapper;
 
 import java.sql.PreparedStatement;
 import java.util.Collection;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -35,12 +38,6 @@ public class ReviewsDBStorage {
                 ps.setBoolean(2, newReview.getIsPositive());
                 ps.setLong(3, newReview.getUserId());
                 ps.setLong(4, newReview.getFilmId());
-
-                if (newReview.getUseful() != null) {
-                    ps.setInt(5, newReview.getUseful());
-                } else {
-                    ps.setInt(5, 0);
-                }
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
@@ -67,8 +64,7 @@ public class ReviewsDBStorage {
                     reviewToUpdate.getIsPositive(),
                     reviewToUpdate.getUserId(),
                     reviewToUpdate.getFilmId(),
-                    reviewToUpdate.getReviewId(),
-                    reviewToUpdate.getUseful());
+                    reviewToUpdate.getReviewId());
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("Review referential integrity error", reviewToUpdate);
         }
@@ -88,6 +84,15 @@ public class ReviewsDBStorage {
         return review;
     }
 
+    public Review deleteReviewLikes(Long reviewId) {
+
+        Review review = checkAndReturnReviewById(reviewId);
+        jdbc.update(ReviewRowMapper.DELETE_REVIEW_REACTIONS_QUERY, reviewId);
+
+        return review;
+    }
+
+
     public Collection<Review> getReviewsByFilmId(Long filmId, int count) {
 
         filmStorage.checkFilmById(filmId);
@@ -99,15 +104,43 @@ public class ReviewsDBStorage {
         return jdbc.query(ReviewRowMapper.GET_REVIEWS_BY_FILM_ID_QUERY, new ReviewRowMapper(), filmId, count);
     }
 
-    public Review updateReviewUseful(Long reviewId, Integer newUseful) {
-
+    public Optional<ReviewUserLike> getUserReaction(Long reviewId, Long userId) {
+        userStorage.checkUserById(userId);
         checkAndReturnReviewById(reviewId);
 
-        jdbc.update(ReviewRowMapper.UPDATE_REVIEW_USEFUL_QUERY, newUseful, reviewId);
-
-        return checkAndReturnReviewById(reviewId);
+        try {
+            return  Optional.ofNullable(
+                    jdbc.queryForObject(ReviewRowMapper.GET_USER_REVIEW_REACTIONS_QUERY, new ReviewUserLikeMapper(), reviewId, userId)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
+    public Collection<ReviewUserLike> getReviewReactions(Long reviewId) {
+        checkAndReturnReviewById(reviewId);
+        return jdbc.query(ReviewRowMapper.GET_REVIEW_REACTIONS_QUERY, new ReviewUserLikeMapper(), reviewId);
+
+    }
+
+
+    public void addUserReaction(Long reviewId, Long userId, int userReaction) {
+        userStorage.checkUserById(userId);
+        checkAndReturnReviewById(reviewId);
+
+        jdbc.update(ReviewRowMapper.CREATE_USER_REACTION_QUERY, reviewId, userId, userReaction);
+
+    }
+
+
+
+    public void deleteUserReaction(Long reviewId, Long userId) {
+        userStorage.checkUserById(userId);
+        checkAndReturnReviewById(reviewId);
+
+        jdbc.update(ReviewRowMapper.DELETE_USER_REACTION_QUERY, reviewId , userId);
+
+    }
 
     Review checkAndReturnReviewById(Long id) {
         try {
