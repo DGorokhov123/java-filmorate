@@ -21,8 +21,8 @@ import java.util.Collection;
 public class ReviewsDBStorage {
 
     private final JdbcTemplate jdbc;
-    private final UserDbStorage userStorage;
-    private final FilmDbStorage filmStorage;
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     public Review createReview(Review newReview) {
 
