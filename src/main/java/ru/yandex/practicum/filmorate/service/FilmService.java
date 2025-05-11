@@ -120,6 +120,16 @@ public class FilmService {
                 .toList();
     }
 
+    // ADD-DIRECTOR FEATURE
+
+    public Collection<FilmApiDto> getDirectorFilm(Integer id, String sortBy) {
+        return filmStorage.getDirectorFilm(id, sortBy).stream()
+                .map(FilmMapper::toDto)
+                .toList();
+    }
+
+
+
 
     // RECOMMENDATIONS
 

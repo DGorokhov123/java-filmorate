@@ -25,6 +25,9 @@ public interface FilmStorage {
 
     List<Film> getPopular(Integer count);
 
+    //add-director feature
+    Collection<Film> getDirectorFilm(Integer id, String sortBy);
+
     List<Film> getRecommendations(Long userId);
 
 }
