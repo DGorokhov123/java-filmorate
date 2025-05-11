@@ -30,4 +30,5 @@ public interface FilmStorage {
 
     List<Film> getRecommendations(Long userId);
 
+    Collection<Long> getFilmLikesByUserId(Long userId);
 }

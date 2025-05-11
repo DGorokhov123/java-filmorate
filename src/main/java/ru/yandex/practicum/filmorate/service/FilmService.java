@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -144,4 +145,19 @@ public class FilmService {
                 .toList();
     }
 
+    public Collection<FilmApiDto> getCommonFilms(Long userId, Long friendId) {
+        userStorage.checkUserById(userId);
+        userStorage.checkUserById(friendId);
+
+        Collection<Long> userFilmsIds = filmStorage.getFilmLikesByUserId(userId);
+        Collection<Long> friendFilmsIds = filmStorage.getFilmLikesByUserId(friendId);
+
+        return userFilmsIds.stream()
+                .filter(friendFilmsIds::contains)
+                .map(filmStorage::getFilmById)
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
+                .map(FilmMapper::toDto)
+                .toList();
+    }
 }

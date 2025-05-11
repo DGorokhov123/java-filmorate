@@ -199,4 +199,8 @@ public class FilmDbStorage implements FilmStorage {
         return jdbc.query(FilmRowMapper.GET_RECOMMENDED_FILMS_QUERY, new FilmRowMapper(), userId);
     }
 
+    @Override
+    public Collection<Long> getFilmLikesByUserId(Long userId) {
+        return jdbc.queryForList(FilmRowMapper.GET_FILMS_ID_BY_USER_ID_QUERY, Long.class, userId);
+    }
 }
