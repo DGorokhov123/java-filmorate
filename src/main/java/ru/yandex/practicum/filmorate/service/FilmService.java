@@ -130,4 +130,19 @@ public class FilmService {
     }
 
 
+
+
+    // RECOMMENDATIONS
+
+
+    public Collection<FilmApiDto> findRecommendations(Long userId) {
+        if (userId == null || userId < 1) throw new IllegalArgumentException("Invalid User Id");
+        userStorage.checkUserById(userId);
+        List<Film> films = filmStorage.getRecommendations(userId);
+        return films.stream()
+                .filter(Objects::nonNull)
+                .map(FilmMapper::toDto)
+                .toList();
+    }
+
 }

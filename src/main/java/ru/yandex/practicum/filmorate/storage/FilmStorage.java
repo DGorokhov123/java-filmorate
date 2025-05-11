@@ -28,4 +28,6 @@ public interface FilmStorage {
     //add-director feature
     Collection<Film> getDirectorFilm(Integer id, String sortBy);
 
+    List<Film> getRecommendations(Long userId);
+
 }
