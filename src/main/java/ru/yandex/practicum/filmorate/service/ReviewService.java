@@ -43,7 +43,7 @@ public class ReviewService {
 
     public Collection<ReviewApiDto> getReviewByFilmId(Long filmId, Integer count) {
 
-        if (!(filmId == null || filmId == 0)) {
+        if ((filmId != null)) {
             return reviewsStorage.getReviewsByFilmId(filmId, count).stream()
                     .map(review -> ReviewMapper.toReviewApiDto(review, getReviewUseful(review.getReviewId())))
                     .collect(Collectors.toSet());
