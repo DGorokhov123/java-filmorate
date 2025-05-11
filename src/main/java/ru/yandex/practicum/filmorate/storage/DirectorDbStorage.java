@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -62,10 +61,6 @@ public class DirectorDbStorage {
 
     // Создание режиссёра
     public Director createDirector(Director director) {
-//        if (isNotValid(director)) {
-//            log.debug("при создании не прошел валидацию Режиссер {}", director);
-//            throw new ValidationException("Director not valid", director);
-//        }
         log.trace("создание Режиссера {}", director);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(connection -> {
@@ -111,10 +106,5 @@ public class DirectorDbStorage {
         log.debug("удалено строк - {}", deletedRows);
         return director;
     }
-
-//    private boolean isNotValid(Director director) {
-//        return director.getName().isBlank()
-//                || director.getName().isEmpty();
-//    }
 
 }
