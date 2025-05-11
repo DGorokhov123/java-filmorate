@@ -322,8 +322,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                                  'name' : d.director_name
                                                 )
                                  ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
-                ) AS directors,
-                COUNT(DISTINCT l.user_id) AS like_count
+                ) AS directors
             FROM films AS f
                      LEFT JOIN likes AS l ON f.film_id = l.film_id
                      LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
@@ -333,7 +332,6 @@ public class FilmRowMapper implements RowMapper<Film> {
                      LEFT JOIN directors AS d ON d.director_id = fd.director_id
             WHERE LOWER(f.name) LIKE CONCAT('%', ?, '%')
             GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name
-            ORDER BY like_count DESC;
             """;
 
 
@@ -362,8 +360,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                                  'name' : d.director_name
                                                 )
                                  ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
-                ) AS directors,
-                COUNT(DISTINCT l.user_id) AS like_count
+                ) AS directors
             FROM films AS f
                      LEFT JOIN likes AS l ON f.film_id = l.film_id
                      LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
@@ -373,7 +370,6 @@ public class FilmRowMapper implements RowMapper<Film> {
                      LEFT JOIN directors AS d ON d.director_id = fd.director_id
             WHERE LOWER(d.director_name) LIKE CONCAT('%', ?, '%')
             GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name
-            ORDER BY like_count DESC;
             """;
 
 

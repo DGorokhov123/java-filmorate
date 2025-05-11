@@ -157,8 +157,9 @@ public class FilmService {
             films.addAll(filmStorage.findFilmsByTitle(query));
             return films.stream()
                     .filter(Objects::nonNull)
+                    .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
                     .map(FilmMapper::toDto)
-                    .toList();
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
         }
 
         Set<String> validParams = new HashSet<>(Arrays.asList("title", "director"));
@@ -185,8 +186,9 @@ public class FilmService {
 
         return films.stream()
                 .filter(Objects::nonNull)
+                .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
                 .map(FilmMapper::toDto)
-                .toList();
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
 
