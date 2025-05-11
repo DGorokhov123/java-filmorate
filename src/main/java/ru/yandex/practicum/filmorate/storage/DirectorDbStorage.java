@@ -46,6 +46,10 @@ public class DirectorDbStorage {
     //  Получение режиссёра по id
     public Director findDirectorById(long id) {
         log.trace("запрос на получение объекта Режиссер с ID - {}", id);
+        if (id <0) {
+            log.debug("при получении Режиссера не прошел валиидацию ID {}", id);
+            throw new ValidationException("ID not valid", id);
+        }
         try {
             Director director = jdbc.queryForObject(FIND_BY_ID_DIRECTOR, directorRowMapper, id);
             log.debug("найден Режиссер {}", director);
@@ -58,10 +62,10 @@ public class DirectorDbStorage {
 
     // Создание режиссёра
     public Director createDirector(Director director) {
-        if (isNotValid(director)) {
-            log.debug("при создании не прошел валидацию Режиссер {}", director);
-            throw new ValidationException("Director not valid", director);
-        }
+//        if (isNotValid(director)) {
+//            log.debug("при создании не прошел валидацию Режиссер {}", director);
+//            throw new ValidationException("Director not valid", director);
+//        }
         log.trace("создание Режиссера {}", director);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(connection -> {
@@ -84,7 +88,8 @@ public class DirectorDbStorage {
     // Изменение режиссёра
     public Director updateDirector(Director director) {
         log.trace("запрос на обновление Режиссера {}", director);
-        if ((director.getId() == null) || (isNotValid(director))) {
+//        if ((director.getId() == null) || (isNotValid(director))) {
+            if ((director.getId() == null) || (director.getId() < 0)) {
             log.debug("при обновлении не прошел валидацию Режиссер {}", director);
             throw new ValidationException("Director not valid", director);
         }
@@ -107,9 +112,9 @@ public class DirectorDbStorage {
         return director;
     }
 
-    private boolean isNotValid(Director director) {
-        return director.getName().isBlank()
-                || director.getName().isEmpty();
-    }
+//    private boolean isNotValid(Director director) {
+//        return director.getName().isBlank()
+//                || director.getName().isEmpty();
+//    }
 
 }
