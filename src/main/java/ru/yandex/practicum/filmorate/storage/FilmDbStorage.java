@@ -199,4 +199,15 @@ public class FilmDbStorage implements FilmStorage {
         return jdbc.query(FilmRowMapper.GET_RECOMMENDED_FILMS_QUERY, new FilmRowMapper(), userId);
     }
 
+    @Override
+    public Collection<Film> findFilmsByDirector(String query) {
+        return jdbc.query(FilmRowMapper.SEARCH_FILMS_BY_DIRECTOR_QUERY, new FilmRowMapper(), query.toLowerCase());
+    }
+
+    @Override
+    public Collection<Film> findFilmsByTitle(String query) {
+        return jdbc.query(FilmRowMapper.SEARCH_FILMS_BY_TITLE_QUERY, new FilmRowMapper(), query.toLowerCase());
+    }
+
+
 }
