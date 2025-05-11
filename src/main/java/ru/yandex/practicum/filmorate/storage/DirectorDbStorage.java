@@ -45,7 +45,7 @@ public class DirectorDbStorage {
     //  Получение режиссёра по id
     public Director findDirectorById(long id) {
         log.trace("запрос на получение объекта Режиссер с ID - {}", id);
-        if (id <0) {
+        if (id < 0) {
             log.debug("при получении Режиссера не прошел валиидацию ID {}", id);
             throw new ValidationException("ID not valid", id);
         }
@@ -83,8 +83,7 @@ public class DirectorDbStorage {
     // Изменение режиссёра
     public Director updateDirector(Director director) {
         log.trace("запрос на обновление Режиссера {}", director);
-//        if ((director.getId() == null) || (isNotValid(director))) {
-            if ((director.getId() == null) || (director.getId() < 0)) {
+        if ((director.getId() == null) || (director.getId() < 0)) {
             log.debug("при обновлении не прошел валидацию Режиссер {}", director);
             throw new ValidationException("Director not valid", director);
         }
