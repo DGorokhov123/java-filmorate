@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.core.RowMapper;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +31,7 @@ public class FilmRowMapper implements RowMapper<Film> {
      * итоговый запрос:
      * для каждого фильма, у которого есть лайки от "соседей" (за вычетом тех, что лайкнул целевой юзер)
      * расчитывается сумма коэффицентов подобия по всем соседским лайкам в итоговый балл с сортировкой
-     *  + сразу же подгружаем данные для выгрузки фильмов в нужном для RowMapper формате
+     * + сразу же подгружаем данные для выгрузки фильмов в нужном для RowMapper формате
      */
     public static String GET_RECOMMENDED_FILMS_QUERY = """
             WITH target AS (
@@ -292,6 +295,85 @@ public class FilmRowMapper implements RowMapper<Film> {
                 LEFT JOIN directors AS d ON d.director_id = fd.director_id
                 WHERE d.director_id = ?
                 GROUP BY f.film_id
+            """;
+
+    public static String SEARCH_FILMS_BY_TITLE_QUERY = """
+            SELECT
+                f.film_id AS id,
+                f.name AS name,
+                f.description AS description,
+                f.release_date AS release_date,
+                f.duration AS duration,
+                f.rating_id AS rating_id,
+                r.name AS rating_name,
+                ARRAY_AGG(DISTINCT l.user_id) AS likes,
+                CAST(
+                        JSON_ARRAYAGG(
+                            DISTINCT JSON_OBJECT(
+                                'id' : g.genre_id,
+                                'name' : g.name
+                                               )
+                                ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
+                ) AS genres,
+                CAST(
+                        JSON_ARRAYAGG(
+                            DISTINCT JSON_OBJECT(
+                                 'id' : d.director_id,
+                                 'name' : d.director_name
+                                                )
+                                 ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
+                ) AS directors,
+                COUNT(DISTINCT l.user_id) AS like_count
+            FROM films AS f
+                     LEFT JOIN likes AS l ON f.film_id = l.film_id
+                     LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
+                     LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
+                     LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
+                     LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id
+                     LEFT JOIN directors AS d ON d.director_id = fd.director_id
+            WHERE LOWER(f.name) LIKE CONCAT('%', ?, '%')
+            GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name
+            ORDER BY like_count DESC;
+            """;
+
+
+    public static String SEARCH_FILMS_BY_DIRECTOR_QUERY = """
+              SELECT
+                f.film_id AS id,
+                f.name AS name,
+                f.description AS description,
+                f.release_date AS release_date,
+                f.duration AS duration,
+                f.rating_id AS rating_id,
+                r.name AS rating_name,
+                ARRAY_AGG(DISTINCT l.user_id) AS likes,
+                CAST(
+                        JSON_ARRAYAGG(
+                            DISTINCT JSON_OBJECT(
+                                'id' : g.genre_id,
+                                'name' : g.name
+                                               )
+                                ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
+                ) AS genres,
+                CAST(
+                        JSON_ARRAYAGG(
+                            DISTINCT JSON_OBJECT(
+                                 'id' : d.director_id,
+                                 'name' : d.director_name
+                                                )
+                                 ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
+                ) AS directors,
+                COUNT(DISTINCT l.user_id) AS like_count
+            FROM films AS f
+                     LEFT JOIN likes AS l ON f.film_id = l.film_id
+                     LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
+                     LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
+                     LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
+                     LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id
+                     LEFT JOIN directors AS d ON d.director_id = fd.director_id
+            WHERE LOWER(d.director_name) LIKE CONCAT('%', ?, '%')
+            GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name
+            ORDER BY like_count DESC;
             """;
 
 
