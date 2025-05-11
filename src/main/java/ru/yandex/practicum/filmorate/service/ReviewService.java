@@ -41,10 +41,18 @@ public class ReviewService {
                 ReviewMapper.toReview(reviewApiDto)), getReviewUseful(reviewApiDto.getReviewId()));
     }
 
-    public Collection<ReviewApiDto> getReviewByFilmd(Long filmId, Integer count) {
-        return reviewsStorage.getReviewsByFilmId(filmId, count).stream()
+    public Collection<ReviewApiDto> getReviewByFilmId(Long filmId, Integer count) {
+
+        if (!(filmId == null || filmId == 0)) {
+            return reviewsStorage.getReviewsByFilmId(filmId, count).stream()
+                    .map(review -> ReviewMapper.toReviewApiDto(review, getReviewUseful(review.getReviewId())))
+                    .collect(Collectors.toSet());
+        }
+
+        return reviewsStorage.getReviews(count).stream()
                 .map(review -> ReviewMapper.toReviewApiDto(review, getReviewUseful(review.getReviewId())))
                 .collect(Collectors.toSet());
+
     }
 
     public ReviewApiDto deleteReviewById(Long id) {

@@ -37,7 +37,7 @@ public class ReviewController {
     public Collection<ReviewApiDto> getReviewByFilmId(
             @RequestParam(required = false) Long filmId,
             @RequestParam(required = false, defaultValue = "10") Integer count) {
-        return reviewService.getReviewByFilmd(filmId, count);
+        return reviewService.getReviewByFilmId(filmId, count);
     }
 
     //Удаление уже имеющегося отзыва.
