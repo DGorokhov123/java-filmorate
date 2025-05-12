@@ -76,6 +76,14 @@ public class FilmRowMapper implements RowMapper<Film> {
                     )
                   ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
                 ) AS genres,
+                CAST(
+                     JSON_ARRAYAGG(
+                     DISTINCT JSON_OBJECT(
+                     'id' : d.director_id,
+                     'name' : d.director_name
+                                    )
+                     ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
+                     ) AS directors,
             	SUM(n.similarity) AS score
             FROM likes AS l
             JOIN neighbours AS n ON l.user_id = n.user_id
@@ -272,20 +280,20 @@ public class FilmRowMapper implements RowMapper<Film> {
                 ARRAY_AGG(DISTINCT l.user_id) AS likes,
                 CAST(
                     JSON_ARRAYAGG(
-                    DISTINCT JSON_OBJECT(
-                    'id' : g.genre_id,
-                    'name' : g.name
-                                   )
+                        DISTINCT JSON_OBJECT(
+                            'id' : g.genre_id,
+                            'name' : g.name
+                        )
                     ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
-                    ) AS genres,
+                ) AS genres,
                 CAST(
-                     JSON_ARRAYAGG(
-                     DISTINCT JSON_OBJECT(
-                     'id' : d.director_id,
-                     'name' : d.director_name
-                                    )
-                     ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
-                     ) AS directors
+                    JSON_ARRAYAGG(
+                        DISTINCT JSON_OBJECT(
+                            'id' : d.director_id,
+                            'name' : d.director_name
+                        )
+                    ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
+                ) AS directors
                 FROM films AS f
                 LEFT JOIN likes AS l ON f.film_id = l.film_id
                 LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
