@@ -131,8 +131,6 @@ public class FilmService {
     }
 
 
-
-
     // RECOMMENDATIONS
 
 
@@ -142,6 +140,22 @@ public class FilmService {
         List<Film> films = filmStorage.getRecommendations(userId);
         return films.stream()
                 .filter(Objects::nonNull)
+                .map(FilmMapper::toDto)
+                .toList();
+    }
+
+    public Collection<FilmApiDto> getCommonFilms(Long userId, Long friendId) {
+        userStorage.checkUserById(userId);
+        userStorage.checkUserById(friendId);
+
+        Collection<Long> userFilmsIds = filmStorage.getFilmLikesByUserId(userId);
+        Collection<Long> friendFilmsIds = filmStorage.getFilmLikesByUserId(friendId);
+
+        return userFilmsIds.stream()
+                .filter(friendFilmsIds::contains)
+                .map(filmStorage::getFilmById)
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
                 .map(FilmMapper::toDto)
                 .toList();
     }
@@ -193,7 +207,6 @@ public class FilmService {
                 .map(FilmMapper::toDto)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
-
 
 
 }

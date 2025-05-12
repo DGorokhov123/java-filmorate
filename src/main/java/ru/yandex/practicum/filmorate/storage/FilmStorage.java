@@ -30,6 +30,8 @@ public interface FilmStorage {
 
     List<Film> getRecommendations(Long userId);
 
+    Collection<Long> getFilmLikesByUserId(Long userId);
+
     Collection<Film> findFilmsByDirector(String query);
 
     Collection<Film> findFilmsByTitle(String query);
