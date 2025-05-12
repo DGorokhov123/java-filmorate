@@ -10,10 +10,6 @@ import ru.yandex.practicum.filmorate.service.validators.film.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -132,8 +128,6 @@ public class FilmService {
     }
 
 
-
-
     // RECOMMENDATIONS
 
 
@@ -162,6 +156,7 @@ public class FilmService {
                 .map(FilmMapper::toDto)
                 .toList();
     }
+
     public Collection<FilmApiDto> searchFilms(String query, String by) {
         if (query == null || query.isBlank()) {
             // Обработка пустого запроса
@@ -209,7 +204,6 @@ public class FilmService {
                 .map(FilmMapper::toDto)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
-
 
 
 }
