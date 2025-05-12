@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.core.RowMapper;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,7 +31,7 @@ public class FilmRowMapper implements RowMapper<Film> {
      * итоговый запрос:
      * для каждого фильма, у которого есть лайки от "соседей" (за вычетом тех, что лайкнул целевой юзер)
      * расчитывается сумма коэффицентов подобия по всем соседским лайкам в итоговый балл с сортировкой
-     *  + сразу же подгружаем данные для выгрузки фильмов в нужном для RowMapper формате
+     * + сразу же подгружаем данные для выгрузки фильмов в нужном для RowMapper формате
      */
     public static String GET_RECOMMENDED_FILMS_QUERY = """
             WITH target AS (
