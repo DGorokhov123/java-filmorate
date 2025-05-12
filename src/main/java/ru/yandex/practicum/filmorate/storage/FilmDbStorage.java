@@ -222,7 +222,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendations(Long userId) {
-        return jdbc.query(FilmRowMapper.GET_RECOMMENDED_FILMS_QUERY, new FilmRowMapper(), userId);
+        return jdbc.query(FilmRowMapper.GET_RECOMMENDED_FILMS_QUERY, new FilmRowMapper(), userId, userId, userId);
     }
 
     @Override

@@ -31,21 +31,18 @@ public class FilmRowMapper implements RowMapper<Film> {
      * + сразу же подгружаем данные для выгрузки фильмов в нужном для RowMapper формате
      */
     public static String GET_RECOMMENDED_FILMS_QUERY = """
-            WITH target AS (
-                SELECT CAST(? AS BIGINT) AS target_id
-            ),
-            intersections AS (
+            WITH intersections AS (
                 SELECT l2.user_id, COUNT(*) AS intersection_count
                 FROM likes AS l1
                 JOIN likes AS l2 ON l1.film_id = l2.film_id AND l1.user_id != l2.user_id
-                WHERE l1.user_id = (SELECT target_id FROM target)
+                WHERE l1.user_id = ?
                 GROUP BY l2.user_id
             ),
             likecounts AS (
                 SELECT user_id, COUNT(*) AS like_count FROM likes GROUP BY user_id
             ),
             targetlikecount AS (
-                SELECT COUNT(*) AS target_like_count FROM LIKES WHERE user_id = (SELECT target_id FROM target)
+                SELECT COUNT(*) AS target_like_count FROM LIKES WHERE user_id = ?
             ),
             neighbours AS (
                 SELECT
@@ -91,7 +88,7 @@ public class FilmRowMapper implements RowMapper<Film> {
             LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
             LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id
             LEFT JOIN directors AS d ON d.director_id = fd.director_id
-            WHERE l.film_id NOT IN (SELECT film_id FROM likes WHERE user_id = (SELECT target_id FROM target))
+            WHERE l.film_id NOT IN (SELECT film_id FROM likes WHERE user_id = ?)
             GROUP BY l.film_id
             ORDER BY score DESC
             """;
