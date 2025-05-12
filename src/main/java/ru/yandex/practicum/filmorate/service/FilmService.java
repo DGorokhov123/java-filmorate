@@ -26,6 +26,7 @@ public class FilmService {
     private final RatingService ratingService;
     private final GenreService genreService;
     private final EventService eventService;
+    private final DirectorService directorService;
 
     private final FilmValidator filmCreateValidator = FilmValidatorBuilder.builder()
             .register(new FilmNullValidator())
@@ -143,6 +144,8 @@ public class FilmService {
     // ADD-DIRECTOR FEATURE
 
     public Collection<FilmApiDto> getDirectorFilm(Integer id, String sortBy) {
+        if (id == null || id < 1) throw new NotFoundException("Invalid Director Id", id);
+        directorService.findDirectorById(id);
         return filmStorage.getDirectorFilm(id, sortBy).stream()
                 .map(FilmMapper::toDto)
                 .toList();
