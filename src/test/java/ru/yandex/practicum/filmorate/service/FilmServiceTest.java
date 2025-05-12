@@ -14,10 +14,7 @@ import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.UserApiDto;
 import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.GenreDBStorage;
-import ru.yandex.practicum.filmorate.storage.RatingDBStorage;
-import ru.yandex.practicum.filmorate.storage.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -35,7 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Import({UserService.class, UserDbStorage.class,
         FilmService.class, FilmDbStorage.class,
         RatingService.class, RatingDBStorage.class,
-        GenreService.class, GenreDBStorage.class})
+        GenreService.class, GenreDBStorage.class,
+        EventService.class, EventDbStorage.class})
 class FilmServiceTest {
 
     private final UserService userService;
