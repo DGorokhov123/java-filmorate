@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.service.validators.film.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -115,15 +116,16 @@ public class FilmService {
 
     public List<FilmApiDto> getPopular(Integer count, Long genreId, String year) {
         // ADD-MOST-POPULARS
-        // проверка на корректность ввода genreId - положительное число от 1 до 6
+        // проверка на корректность ввода genreId - положительное, не нулевое число
+        final Year FIRST_FILM_RELEASE_YEAR = Year.of(1985);
         if (count == null || count < 0) throw new IllegalArgumentException("count should be a positive integer number");
-        if (Objects.nonNull(genreId) && (genreId < 1 || genreId > 6))
+        if (Objects.nonNull(genreId) && (genreId < 1))
             throw new IllegalArgumentException("genreId should be a positive integer number, not zero");
         // проверка на корректность ввода year - корректный формат года, большего или равного 1985
         // по условиям ТЗ - дата релиза фильмов не раньше 28 декабря 1895 года;
         if (Objects.nonNull(year)) {
             try {
-                if (Year.parse(year).isBefore(Year.of(1985)))
+                if (Year.parse(year).isBefore(FIRST_FILM_RELEASE_YEAR))
                     throw new IllegalArgumentException("Year should be after or equal 1985");
             } catch (DateTimeParseException ignored) {
                 throw new IllegalArgumentException("Year should be a valid info in YYYY format");
