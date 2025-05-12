@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 @RestController
 @RequestMapping("/users")
@@ -69,7 +70,9 @@ public class UserController {
 
     @GetMapping("/{userId}/friends")
     public Collection<UserApiDto> findFriends(@PathVariable Long userId) {
-        return userService.findFriends(userId);
+        return userService.findFriends(userId).stream()
+                .sorted(Comparator.comparing(UserApiDto::getId))
+                .toList();
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
