@@ -99,6 +99,8 @@ public class FilmRowMapper implements RowMapper<Film> {
             ORDER BY score DESC
             """;
 
+
+    // ADD-MOST-POPULARS
     public static String GET_POPULAR_FILMS_QUERY = """
             SELECT
                 f.film_id AS id,
@@ -132,10 +134,8 @@ public class FilmRowMapper implements RowMapper<Film> {
                 LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
                 LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id
                 LEFT JOIN directors AS d ON d.director_id = fd.director_id
-            GROUP BY f.film_id
-            ORDER BY COUNT(DISTINCT l.user_id) DESC
-            LIMIT ?;
             """;
+
 
     public static String GET_FILMS_QUERY = """
             SELECT

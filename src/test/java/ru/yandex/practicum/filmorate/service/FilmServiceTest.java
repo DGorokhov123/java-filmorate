@@ -101,18 +101,18 @@ class FilmServiceTest {
         filmService.addLike(3L, 2L);
         filmService.addLike(2L, 1L);
 
-        Collection<FilmApiDto> popular = filmService.getPopular(1000);
+        Collection<FilmApiDto> popular = filmService.getPopular(1000,null,null);
         List<String> popularNames = popular.stream().filter(Objects::nonNull).map(FilmApiDto::getName).toList();
         assertEquals(3, popularNames.size());
         assertEquals("Titanic", popularNames.get(0));
         assertEquals("Terminator", popularNames.get(1));
         assertEquals("Omen", popularNames.get(2));
 
-        popular = filmService.getPopular(2);
+        popular = filmService.getPopular(2,null,null);
         assertEquals(2, popular.size());
 
         assertThrows(IllegalArgumentException.class, () -> {
-            filmService.getPopular(-1);
+            filmService.getPopular(-1,null,null);
         });
     }
 
