@@ -39,7 +39,7 @@ public class DirectorService {
     }
 
     public DirectorApiDto deleteDirector(long id) {
-        return  DirectorMapper.toApiDto(directorDbStorage.deleteDirector(id));
+        return DirectorMapper.toApiDto(directorDbStorage.deleteDirector(id));
     }
 
 }

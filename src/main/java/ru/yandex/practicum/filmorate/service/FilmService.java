@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.service.validators.film.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.time.Year;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,7 @@ public class FilmService {
     private final UserStorage userStorage;
     private final RatingService ratingService;
     private final GenreService genreService;
+    private final EventService eventService;
 
     private final FilmValidator filmCreateValidator = FilmValidatorBuilder.builder()
             .register(new FilmNullValidator())
@@ -99,6 +102,7 @@ public class FilmService {
         userStorage.checkUserById(userId);
         filmStorage.checkFilmById(filmId);
         filmStorage.addLike(filmId, userId);
+        eventService.addLikeEvent(filmId, userId);
         log.debug("Added like to film {} by user {}", filmId, userId);
     }
 
@@ -108,12 +112,28 @@ public class FilmService {
         userStorage.checkUserById(userId);
         filmStorage.checkFilmById(filmId);
         filmStorage.removeLike(filmId, userId);
+        eventService.removeLikeEvent(filmId, userId);
         log.debug("Removed like from film {} by user {}", filmId, userId);
     }
 
-    public List<FilmApiDto> getPopular(Integer count) {
+    public List<FilmApiDto> getPopular(Integer count, Long genreId, String year) {
+        // ADD-MOST-POPULARS
+        // проверка на корректность ввода genreId - положительное, не нулевое число
+        final Year FIRST_FILM_RELEASE_YEAR = Year.of(1985);
         if (count == null || count < 0) throw new IllegalArgumentException("count should be a positive integer number");
-        return filmStorage.getPopular(count).stream()
+        if (Objects.nonNull(genreId) && (genreId < 1))
+            throw new IllegalArgumentException("genreId should be a positive integer number, not zero");
+        // проверка на корректность ввода year - корректный формат года, большего или равного 1985
+        // по условиям ТЗ - дата релиза фильмов не раньше 28 декабря 1895 года;
+        if (Objects.nonNull(year)) {
+            try {
+                if (Year.parse(year).isBefore(FIRST_FILM_RELEASE_YEAR))
+                    throw new IllegalArgumentException("Year should be after or equal 1985");
+            } catch (DateTimeParseException ignored) {
+                throw new IllegalArgumentException("Year should be a valid info in YYYY format");
+            }
+        }
+        return filmStorage.getPopular(count,genreId, year).stream()
                 .filter(Objects::nonNull)
                 .map(FilmMapper::toDto)
                 .toList();
@@ -128,8 +148,6 @@ public class FilmService {
     }
 
 
-
-
     // RECOMMENDATIONS
 
 
@@ -139,6 +157,22 @@ public class FilmService {
         List<Film> films = filmStorage.getRecommendations(userId);
         return films.stream()
                 .filter(Objects::nonNull)
+                .map(FilmMapper::toDto)
+                .toList();
+    }
+
+    public Collection<FilmApiDto> getCommonFilms(Long userId, Long friendId) {
+        userStorage.checkUserById(userId);
+        userStorage.checkUserById(friendId);
+
+        Collection<Long> userFilmsIds = filmStorage.getFilmLikesByUserId(userId);
+        Collection<Long> friendFilmsIds = filmStorage.getFilmLikesByUserId(friendId);
+
+        return userFilmsIds.stream()
+                .filter(friendFilmsIds::contains)
+                .map(filmStorage::getFilmById)
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed().thenComparingLong(Film::getId))
                 .map(FilmMapper::toDto)
                 .toList();
     }
@@ -157,7 +191,7 @@ public class FilmService {
             films.addAll(filmStorage.findFilmsByTitle(query));
             return films.stream()
                     .filter(Objects::nonNull)
-                    .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
+                    .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed().thenComparingLong(Film::getId))
                     .map(FilmMapper::toDto)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
@@ -186,11 +220,10 @@ public class FilmService {
 
         return films.stream()
                 .filter(Objects::nonNull)
-                .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
+                .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed().thenComparingLong(Film::getId))
                 .map(FilmMapper::toDto)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
-
 
 
 }

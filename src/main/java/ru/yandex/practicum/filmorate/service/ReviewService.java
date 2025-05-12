@@ -5,6 +5,7 @@ import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.ReviewApiDto;
 import ru.yandex.practicum.filmorate.model.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.ReviewUserLike;
@@ -24,10 +25,12 @@ public class ReviewService {
     private static final int USER_LIKE_START = 6;
 
     private final ReviewsDBStorage reviewsStorage;
+    private final EventService eventService;
 
     public ReviewApiDto createReview(@Valid ReviewApiDto reviewDTO) {
-        return ReviewMapper.toReviewApiDto(reviewsStorage.createReview(
-                        ReviewMapper.toReview(reviewDTO)),
+        Review review = reviewsStorage.createReview(ReviewMapper.toReview(reviewDTO));
+        eventService.addReviewEvent(review.getReviewId(), review.getUserId());
+        return ReviewMapper.toReviewApiDto(review,
                 0); // при создании нового отзыва его полезность всегда = 0
     }
 
@@ -37,8 +40,9 @@ public class ReviewService {
 
 
     public ReviewApiDto updateReview(@Valid ReviewApiDto reviewApiDto) {
-        return ReviewMapper.toReviewApiDto(reviewsStorage.updateReview(
-                ReviewMapper.toReview(reviewApiDto)), getReviewUseful(reviewApiDto.getReviewId()));
+        Review review = reviewsStorage.updateReview(ReviewMapper.toReview(reviewApiDto));
+        eventService.updateReviewEvent(review.getReviewId(), review.getUserId());
+        return ReviewMapper.toReviewApiDto(review, getReviewUseful(reviewApiDto.getReviewId()));
     }
 
     public Collection<ReviewApiDto> getReviewByFilmId(Long filmId, Integer count) {
@@ -61,7 +65,9 @@ public class ReviewService {
 
         reviewsStorage.deleteReviewLikes(id); // перед удалением обзора удалить его лайки
 
-        return ReviewMapper.toReviewApiDto(reviewsStorage.deleteReviewById(id), useful);
+        Review review = reviewsStorage.deleteReviewById(id);
+        eventService.removeReviewEvent(review.getReviewId(), review.getUserId());
+        return ReviewMapper.toReviewApiDto(review, useful);
     }
 
     public ReviewApiDto addLike(Long reviewId, Long userId) {

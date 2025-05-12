@@ -38,6 +38,7 @@ public class UserService {
             .build();
 
     private final UserStorage userStorage;
+    private final EventService eventService;
 
 
     // STORAGE OPERATIONS
@@ -90,6 +91,7 @@ public class UserService {
         if (id1 == null || id2 == null || id1 < 1 || id2 < 1) throw new IllegalArgumentException("Invalid User id");
         if (Objects.equals(id1, id2)) throw new IllegalArgumentException("User ids are equal");
         userStorage.addFriend(id1, id2);
+        eventService.addFriendEvent(id1, id2);
         log.debug("User {} added friend {}", id1, id2);
     }
 
@@ -97,6 +99,7 @@ public class UserService {
         if (id1 == null || id2 == null || id1 < 1 || id2 < 1) throw new IllegalArgumentException("Invalid User id");
         if (Objects.equals(id1, id2)) throw new IllegalArgumentException("User ids are equal");
         userStorage.removeFriend(id1, id2);
+        eventService.removeFriendEvent(id1, id2);
         log.debug("User {} removed user {} from friends", id1, id2);
     }
 

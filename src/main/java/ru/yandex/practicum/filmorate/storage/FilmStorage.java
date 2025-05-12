@@ -23,12 +23,14 @@ public interface FilmStorage {
 
     void removeLike(Long filmId, Long userId);
 
-    List<Film> getPopular(Integer count);
+    List<Film> getPopular(Integer count, Long genreId, String year);
 
     //add-director feature
     Collection<Film> getDirectorFilm(Integer id, String sortBy);
 
     List<Film> getRecommendations(Long userId);
+
+    Collection<Long> getFilmLikesByUserId(Long userId);
 
     Collection<Film> findFilmsByDirector(String query);
 

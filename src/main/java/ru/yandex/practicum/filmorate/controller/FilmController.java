@@ -61,9 +61,14 @@ public class FilmController {
         filmService.removeLike(filmId, userId);
     }
 
+
+    // ADD-MOST-POPULARS
+    // GET /films/popular?count={limit}&genreId={genreId}&year={year}
     @GetMapping("/popular")
-    public Collection<FilmApiDto> getPopular(@RequestParam(defaultValue = "10") Integer count) {
-        return filmService.getPopular(count);
+    public Collection<FilmApiDto> getPopular(@RequestParam(defaultValue = "10") Integer count,
+                                             @RequestParam(required = false) Long genreId,
+                                             @RequestParam(required = false) String year) {
+        return filmService.getPopular(count, genreId, year);
     }
 
     // ADD-DIRECTOR FEATURE
@@ -75,6 +80,7 @@ public class FilmController {
         return filmService.getDirectorFilm(id, sortBy);
 
     }
+
     // SEARCH
 
     @GetMapping("/search")
@@ -85,5 +91,11 @@ public class FilmController {
     }
 
 
+    @GetMapping("/common")
+    public Collection<FilmApiDto> getCommonFilms(@RequestParam() Long userId,
+                                                 @RequestParam Long friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+
+    }
 
 }
