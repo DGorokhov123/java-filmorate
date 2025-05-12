@@ -38,25 +38,15 @@ public class EventService {
 
 
     public void addFriendEvent(Long userId, Long friendId) {
-        Event event = new Event();
-        event.setUserId(userId);
-        event.setEntityId(friendId);
-        event.setEventType(EventType.FRIEND);
-        event.setOperation(OperationType.ADD);
-        event.setTimestamp(OffsetDateTime.now());
+        Event event = makeEvent(userId, friendId, EventType.FRIEND, OperationType.ADD);
         eventDbStorage.createEvent(event);
-        log.debug("Added [ADD FRIEND] event to userId = {},  friendId =  {}", userId, friendId);
+        log.trace("Added [ADD FRIEND] event to userId = {},  friendId =  {}", userId, friendId);
     }
 
     public void removeFriendEvent(Long userId, Long friendId) {
-        Event event = new Event();
-        event.setUserId(userId);
-        event.setEntityId(friendId);
-        event.setEventType(EventType.FRIEND);
-        event.setOperation(OperationType.REMOVE);
-        event.setTimestamp(OffsetDateTime.now());
+        Event event = makeEvent(userId, friendId, EventType.FRIEND, OperationType.REMOVE);
         eventDbStorage.createEvent(event);
-        log.debug("Added [REMOVE FRIEND] event to userId = {},  friendId =  {}", userId, friendId);
+        log.trace("Added [REMOVE FRIEND] event to userId = {},  friendId =  {}", userId, friendId);
     }
 
 
@@ -64,25 +54,15 @@ public class EventService {
 
 
     public void addLikeEvent(Long filmId, Long userId) {
-        Event event = new Event();
-        event.setUserId(userId);
-        event.setEntityId(filmId);
-        event.setEventType(EventType.LIKE);
-        event.setOperation(OperationType.ADD);
-        event.setTimestamp(OffsetDateTime.now());
+        Event event = makeEvent(userId, filmId, EventType.LIKE, OperationType.ADD);
         eventDbStorage.createEvent(event);
-        log.debug("Added [ADD LIKE] event to filmId = {},  userId =  {}", filmId, userId);
+        log.trace("Added [ADD LIKE] event to filmId = {},  userId =  {}", filmId, userId);
     }
 
     public void removeLikeEvent(Long filmId, Long userId) {
-        Event event = new Event();
-        event.setUserId(userId);
-        event.setEntityId(filmId);
-        event.setEventType(EventType.LIKE);
-        event.setOperation(OperationType.REMOVE);
-        event.setTimestamp(OffsetDateTime.now());
+        Event event = makeEvent(userId, filmId, EventType.LIKE, OperationType.REMOVE);
         eventDbStorage.createEvent(event);
-        log.debug("Added [REMOVE LIKE] event to filmId = {},  userId =  {}", filmId, userId);
+        log.trace("Added [REMOVE LIKE] event to filmId = {},  userId =  {}", filmId, userId);
     }
 
 
@@ -90,36 +70,31 @@ public class EventService {
 
 
     public void addReviewEvent(Long reviewId, Long userId) {
-        Event event = new Event();
-        event.setUserId(userId);
-        event.setEntityId(reviewId);
-        event.setEventType(EventType.REVIEW);
-        event.setOperation(OperationType.ADD);
-        event.setTimestamp(OffsetDateTime.now());
+        Event event = makeEvent(userId, reviewId, EventType.REVIEW, OperationType.ADD);
         eventDbStorage.createEvent(event);
-        log.debug("Added [ADD REVIEW] event to reviewId = {},  userId =  {}", reviewId, userId);
+        log.trace("Added [ADD REVIEW] event to reviewId = {},  userId =  {}", reviewId, userId);
     }
 
     public void removeReviewEvent(Long reviewId, Long userId) {
-        Event event = new Event();
-        event.setUserId(userId);
-        event.setEntityId(reviewId);
-        event.setEventType(EventType.REVIEW);
-        event.setOperation(OperationType.REMOVE);
-        event.setTimestamp(OffsetDateTime.now());
+        Event event = makeEvent(userId, reviewId, EventType.REVIEW, OperationType.REMOVE);
         eventDbStorage.createEvent(event);
-        log.debug("Added [REMOVE REVIEW] event to reviewId = {},  userId =  {}", reviewId, userId);
+        log.trace("Added [REMOVE REVIEW] event to reviewId = {},  userId =  {}", reviewId, userId);
     }
 
     public void updateReviewEvent(Long reviewId, Long userId) {
+        Event event = makeEvent(userId, reviewId, EventType.REVIEW, OperationType.UPDATE);
+        eventDbStorage.createEvent(event);
+        log.trace("Added [UPDATE REVIEW] event to reviewId = {},  userId =  {}", reviewId, userId);
+    }
+
+    private Event makeEvent(Long userId, Long entityId, EventType eventType, OperationType operationType) {
         Event event = new Event();
         event.setUserId(userId);
-        event.setEntityId(reviewId);
-        event.setEventType(EventType.REVIEW);
-        event.setOperation(OperationType.UPDATE);
+        event.setEntityId(entityId);
+        event.setEventType(eventType);
+        event.setOperation(operationType);
         event.setTimestamp(OffsetDateTime.now());
-        eventDbStorage.createEvent(event);
-        log.debug("Added [UPDATE REVIEW] event to reviewId = {},  userId =  {}", reviewId, userId);
+        return event;
     }
 
 
