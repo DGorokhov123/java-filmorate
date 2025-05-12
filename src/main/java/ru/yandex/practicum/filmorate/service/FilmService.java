@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmApiDto;
 import ru.yandex.practicum.filmorate.model.FilmMapper;
+import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.service.validators.film.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -97,8 +98,8 @@ public class FilmService {
 
 
     public void addLike(Long filmId, Long userId) {
-        if (filmId == null || filmId < 1) throw new IllegalArgumentException("Invalid Film Id");
-        if (userId == null || userId < 1) throw new IllegalArgumentException("Invalid User Id");
+        if (filmId == null || filmId < 1) throw new NotFoundException("Invalid Film Id", filmId);
+        if (userId == null || userId < 1) throw new NotFoundException("Invalid User Id", userId);
         userStorage.checkUserById(userId);
         filmStorage.checkFilmById(filmId);
         filmStorage.addLike(filmId, userId);
@@ -107,8 +108,8 @@ public class FilmService {
     }
 
     public void removeLike(Long filmId, Long userId) {
-        if (filmId == null || filmId < 1) throw new IllegalArgumentException("Invalid Film Id");
-        if (userId == null || userId < 1) throw new IllegalArgumentException("Invalid User Id");
+        if (filmId == null || filmId < 1) throw new NotFoundException("Invalid Film Id", filmId);
+        if (userId == null || userId < 1) throw new NotFoundException("Invalid User Id", userId);
         userStorage.checkUserById(userId);
         filmStorage.checkFilmById(filmId);
         filmStorage.removeLike(filmId, userId);
