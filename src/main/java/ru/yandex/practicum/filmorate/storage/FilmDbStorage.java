@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Repository
@@ -107,6 +108,17 @@ public class FilmDbStorage implements FilmStorage {
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("Genre Referential integrity error", film);
         }
+
+        //add-director feature
+        try {
+            film.getDirectors().stream()
+                    .filter(Objects::nonNull)
+                    .forEach(director ->
+                            jdbc.update(FilmRowMapper.ADD_FILM_DIRECTOR_QUERY, film.getId(), director.getId()));
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException("Director Referential integrity error", film);
+        }
+
         return film;
     }
 
@@ -134,6 +146,18 @@ public class FilmDbStorage implements FilmStorage {
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("Film referential integrity error", film);
         }
+
+        // add-director feature
+        try {
+            jdbc.update(FilmRowMapper.REMOVE_FILM_DIRECTOR_QUERY, film.getId());
+            film.getDirectors().stream()
+                    .filter(Objects::nonNull)
+                    .forEach(director ->
+                            jdbc.update(FilmRowMapper.ADD_FILM_DIRECTOR_QUERY, film.getId(), director.getId()));
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException("Film referential integrity error", film);
+        }
+
         return film;
     }
 
@@ -157,8 +181,33 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getDirectorFilm(Integer id, String sortBy) {
+        switch (sortBy) {
+            case "year":
+                sortBy = "ORDER BY EXTRACT(YEAR FROM f.release_date) ASC;";
+                break;
+            case "likes":
+                sortBy = "ORDER BY COUNT( DISTINCT l.user_id) DESC;";
+                break;
+        }
+        return jdbc.query(FilmRowMapper.GET_FILMS_WITH_DIRECTORS_QUERY + sortBy,
+                new FilmRowMapper(), id);
+    }
+
+    @Override
     public List<Film> getRecommendations(Long userId) {
         return jdbc.query(FilmRowMapper.GET_RECOMMENDED_FILMS_QUERY, new FilmRowMapper(), userId);
     }
+
+    @Override
+    public Collection<Film> findFilmsByDirector(String query) {
+        return jdbc.query(FilmRowMapper.SEARCH_FILMS_BY_DIRECTOR_QUERY, new FilmRowMapper(), query.toLowerCase());
+    }
+
+    @Override
+    public Collection<Film> findFilmsByTitle(String query) {
+        return jdbc.query(FilmRowMapper.SEARCH_FILMS_BY_TITLE_QUERY, new FilmRowMapper(), query.toLowerCase());
+    }
+
 
 }
