@@ -155,7 +155,7 @@ public class FilmService {
                 .filter(friendFilmsIds::contains)
                 .map(filmStorage::getFilmById)
                 .filter(Objects::nonNull)
-                .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed())
+                .sorted(Comparator.comparingInt((Film film) -> film.getLikes().size()).reversed().thenComparingLong(Film::getId))
                 .map(FilmMapper::toDto)
                 .toList();
     }
@@ -174,7 +174,7 @@ public class FilmService {
             films.addAll(filmStorage.findFilmsByTitle(query));
             return films.stream()
                     .filter(Objects::nonNull)
-                    .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
+                    .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed().thenComparingLong(Film::getId))
                     .map(FilmMapper::toDto)
                     .collect(Collectors.toCollection(LinkedHashSet::new));
         }
@@ -203,7 +203,7 @@ public class FilmService {
 
         return films.stream()
                 .filter(Objects::nonNull)
-                .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
+                .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed().thenComparingLong(Film::getId))
                 .map(FilmMapper::toDto)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
