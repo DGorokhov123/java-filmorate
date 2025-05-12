@@ -85,5 +85,11 @@ public class FilmController {
     }
 
 
+    @GetMapping("/common")
+    public Collection<FilmApiDto> getCommonFilms(@RequestParam() Long userId,
+                                                 @RequestParam Long friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+
+    }
 
 }
