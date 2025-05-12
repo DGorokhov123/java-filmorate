@@ -12,10 +12,7 @@ import ru.yandex.practicum.filmorate.model.Rating;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FilmRowMapper implements RowMapper<Film> {
@@ -414,10 +411,10 @@ public class FilmRowMapper implements RowMapper<Film> {
         if (dbGenres != null && !dbGenres.isBlank()) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-                Set<Genre> filmGenres = objectMapper.readValue(dbGenres,
-                        new TypeReference<Set<Genre>>() {
-                        });
-                film.setGenres(filmGenres);
+                List<Genre> filmGenresList = objectMapper.readValue(dbGenres, new TypeReference<List<Genre>>() {
+                });
+                Set<Genre> filmGenresSet = new LinkedHashSet<>(filmGenresList);
+                film.setGenres(filmGenresSet);
             } catch (JsonProcessingException e) {
                 // do nothing
             }

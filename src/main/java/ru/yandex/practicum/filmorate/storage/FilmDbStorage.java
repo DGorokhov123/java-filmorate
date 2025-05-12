@@ -119,7 +119,7 @@ public class FilmDbStorage implements FilmStorage {
             throw new NotFoundException("Director Referential integrity error", film);
         }
 
-        return film;
+        return getFilmById(film.getId());
     }
 
     @Override
@@ -158,7 +158,7 @@ public class FilmDbStorage implements FilmStorage {
             throw new NotFoundException("Film referential integrity error", film);
         }
 
-        return film;
+        return getFilmById(film.getId());
     }
 
     @Override
