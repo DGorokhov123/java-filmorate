@@ -74,13 +74,13 @@ public class FilmRowMapper implements RowMapper<Film> {
                   ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
                 ) AS genres,
                 CAST(
-                     JSON_ARRAYAGG(
-                     DISTINCT JSON_OBJECT(
-                     'id' : d.director_id,
-                     'name' : d.director_name
-                                    )
-                     ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
-                     ) AS directors,
+                    JSON_ARRAYAGG(
+                        DISTINCT JSON_OBJECT(
+                            'id' : d.director_id,
+                            'name' : d.director_name
+                        )
+                    ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
+                ) AS directors,
             	SUM(n.similarity) AS score
             FROM likes AS l
             JOIN neighbours AS n ON l.user_id = n.user_id
@@ -89,6 +89,8 @@ public class FilmRowMapper implements RowMapper<Film> {
             LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
             LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
             LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
+            LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id
+            LEFT JOIN directors AS d ON d.director_id = fd.director_id
             WHERE l.film_id NOT IN (SELECT film_id FROM likes WHERE user_id = (SELECT target_id FROM target))
             GROUP BY l.film_id
             ORDER BY score DESC
