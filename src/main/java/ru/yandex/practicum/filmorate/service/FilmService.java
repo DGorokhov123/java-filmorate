@@ -134,7 +134,7 @@ public class FilmService {
                 throw new IllegalArgumentException("Year should be a valid info in YYYY format");
             }
         }
-        return filmStorage.getPopular(count,genreId, year).stream()
+        return filmStorage.getPopular(count, genreId, year).stream()
                 .filter(Objects::nonNull)
                 .map(FilmMapper::toDto)
                 .toList();
