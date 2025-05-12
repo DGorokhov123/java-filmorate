@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.service.validators.film.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.time.Year;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -111,9 +113,23 @@ public class FilmService {
         log.debug("Removed like from film {} by user {}", filmId, userId);
     }
 
-    public List<FilmApiDto> getPopular(Integer count) {
+    public List<FilmApiDto> getPopular(Integer count, Long genreId, String year) {
+        // ADD-MOST-POPULARS
+        // проверка на корректность ввода genreId - положительное число от 1 до 6
         if (count == null || count < 0) throw new IllegalArgumentException("count should be a positive integer number");
-        return filmStorage.getPopular(count).stream()
+        if (Objects.nonNull(genreId) && (genreId < 1 || genreId > 6))
+            throw new IllegalArgumentException("genreId should be a positive integer number, not zero");
+        // проверка на корректность ввода year - корректный формат года, большего или равного 1985
+        // по условиям ТЗ - дата релиза фильмов не раньше 28 декабря 1895 года;
+        if (Objects.nonNull(year)) {
+            try {
+                if (Year.parse(year).isBefore(Year.of(1985)))
+                    throw new IllegalArgumentException("Year should be after or equal 1985");
+            } catch (DateTimeParseException ignored) {
+                throw new IllegalArgumentException("Year should be a valid info in YYYY format");
+            }
+        }
+        return filmStorage.getPopular(count,genreId, year).stream()
                 .filter(Objects::nonNull)
                 .map(FilmMapper::toDto)
                 .toList();
