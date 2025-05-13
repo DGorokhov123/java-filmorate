@@ -30,6 +30,9 @@ public class ReviewsDBStorage {
 
     public Review createReview(Review newReview) {
 
+        userStorage.checkUserById(newReview.getUserId());
+        filmStorage.checkFilmById(newReview.getFilmId());
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
@@ -96,7 +99,7 @@ public class ReviewsDBStorage {
 
     public Collection<Review> getReviewsByFilmId(Long filmId, int count) {
 
-        if (filmId == null || filmId == 0) {
+        if (filmId != null || filmId != 0) {
             return jdbc.query(ReviewRowMapper.GET_REVIEWS_BY_FILM_ID_QUERY, new ReviewRowMapper(), filmId, count);
         }
 
