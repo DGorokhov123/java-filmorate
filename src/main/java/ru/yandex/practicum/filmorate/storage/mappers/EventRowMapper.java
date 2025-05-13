@@ -12,6 +12,13 @@ import java.time.OffsetDateTime;
 public class EventRowMapper implements RowMapper<Event> {
 
     public static String GET_FEED_BY_USER_ID_QUERY = """
+            SELECT *
+            FROM events
+            WHERE user_id = ?
+            ORDER BY event_id ASC;
+            """;
+
+    public static String GET_FEED_BY_USER_ID_WITH_FRIENDS_QUERY = """
             SELECT e.event_id, e.user_id, e.entity_id, e.event_type, e.operation, e.created_at
             FROM events AS e
             LEFT JOIN friends AS f ON f.friend_id = e.user_id

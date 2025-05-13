@@ -20,7 +20,7 @@ public class EventDbStorage {
     private final JdbcTemplate jdbc;
 
     public Collection<Event> getFeed(Long id) {
-        return jdbc.query(EventRowMapper.GET_FEED_BY_USER_ID_QUERY, new EventRowMapper(), id, id);
+        return jdbc.query(EventRowMapper.GET_FEED_BY_USER_ID_QUERY, new EventRowMapper(), id);
     }
 
     public Event createEvent(Event event) {
