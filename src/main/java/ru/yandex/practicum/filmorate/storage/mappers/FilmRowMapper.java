@@ -96,39 +96,39 @@ public class FilmRowMapper implements RowMapper<Film> {
 
     // ADD-MOST-POPULARS
     public static String GET_POPULAR_FILMS_QUERY = """
-                        SELECT
-                f.film_id AS id,
-                f.name AS name,
-                f.description AS description,
-                f.release_date AS release_date,
-                f.duration AS duration,
-                f.rating_id AS rating_id,
-                r.name AS rating_name,
-                ARRAY_AGG(DISTINCT l.user_id) AS likes,
-                CAST(
-                    JSON_ARRAYAGG(
-                    DISTINCT JSON_OBJECT(
-                    'id' : g.genre_id,
-                    'name' : g.name
-                                   )
-                    ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
-                    ) AS genres,
-                CAST(
-                     JSON_ARRAYAGG(
-                     DISTINCT JSON_OBJECT(
-                     'id' : d.director_id,
-                     'name' : d.director_name
-                                    )
-                     ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
-                     ) AS directors
-                FROM films AS f
-                LEFT JOIN likes AS l ON f.film_id = l.film_id
-                LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
-                LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
-                LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
-                LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id
-                LEFT JOIN directors AS d ON d.director_id = fd.director_id
-                """;
+                    SELECT
+            f.film_id AS id,
+            f.name AS name,
+            f.description AS description,
+            f.release_date AS release_date,
+            f.duration AS duration,
+            f.rating_id AS rating_id,
+            r.name AS rating_name,
+            ARRAY_AGG(DISTINCT l.user_id) AS likes,
+            CAST(
+                JSON_ARRAYAGG(
+                DISTINCT JSON_OBJECT(
+                'id' : g.genre_id,
+                'name' : g.name
+                               )
+                ) FILTER (WHERE g.genre_id IS NOT NULL) AS VARCHAR
+                ) AS genres,
+            CAST(
+                 JSON_ARRAYAGG(
+                 DISTINCT JSON_OBJECT(
+                 'id' : d.director_id,
+                 'name' : d.director_name
+                                )
+                 ) FILTER (WHERE d.director_id IS NOT NULL) AS VARCHAR
+                 ) AS directors
+            FROM films AS f
+            LEFT JOIN likes AS l ON f.film_id = l.film_id
+            LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id
+            LEFT JOIN genres AS g ON g.genre_id = fg.genre_id
+            LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
+            LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id
+            LEFT JOIN directors AS d ON d.director_id = fd.director_id
+            """;
 
 
     public static String GET_FILMS_QUERY = """
@@ -410,7 +410,7 @@ public class FilmRowMapper implements RowMapper<Film> {
             try {
                 List<Genre> filmGenresList = objectMapper.readValue(dbGenres,
                         new TypeReference<List<Genre>>() {
-                });
+                        });
                 Set<Genre> filmGenresSet = new LinkedHashSet<>(filmGenresList);
                 film.setGenres(filmGenresSet);
             } catch (JsonProcessingException e) {

@@ -20,11 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-
-import static java.util.stream.Collectors.toMap;
 
 @RequiredArgsConstructor
 @Repository
@@ -207,7 +203,7 @@ public class FilmDbStorage implements FilmStorage {
                             + QUERY_GENRE_ID
                             + QUERY_YEAR
                             + QUERY_GROUP,
-                    new FilmRowMapper(),genreId, year, count);
+                    new FilmRowMapper(), genreId, year, count);
         }
 
         return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY + QUERY_GROUP, new FilmRowMapper(), count);
