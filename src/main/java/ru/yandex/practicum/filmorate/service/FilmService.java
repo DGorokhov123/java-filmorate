@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmApiDto;
 import ru.yandex.practicum.filmorate.model.FilmMapper;
+import ru.yandex.practicum.filmorate.model.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.service.validators.film.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -25,6 +26,7 @@ public class FilmService {
     private final RatingService ratingService;
     private final GenreService genreService;
     private final EventService eventService;
+    private final DirectorService directorService;
 
     private final FilmValidator filmCreateValidator = FilmValidatorBuilder.builder()
             .register(new FilmNullValidator())
@@ -97,8 +99,8 @@ public class FilmService {
 
 
     public void addLike(Long filmId, Long userId) {
-        if (filmId == null || filmId < 1) throw new IllegalArgumentException("Invalid Film Id");
-        if (userId == null || userId < 1) throw new IllegalArgumentException("Invalid User Id");
+        if (filmId == null || filmId < 1) throw new NotFoundException("Invalid Film Id", filmId);
+        if (userId == null || userId < 1) throw new NotFoundException("Invalid User Id", userId);
         userStorage.checkUserById(userId);
         filmStorage.checkFilmById(filmId);
         filmStorage.addLike(filmId, userId);
@@ -107,8 +109,8 @@ public class FilmService {
     }
 
     public void removeLike(Long filmId, Long userId) {
-        if (filmId == null || filmId < 1) throw new IllegalArgumentException("Invalid Film Id");
-        if (userId == null || userId < 1) throw new IllegalArgumentException("Invalid User Id");
+        if (filmId == null || filmId < 1) throw new NotFoundException("Invalid Film Id", filmId);
+        if (userId == null || userId < 1) throw new NotFoundException("Invalid User Id", userId);
         userStorage.checkUserById(userId);
         filmStorage.checkFilmById(filmId);
         filmStorage.removeLike(filmId, userId);
@@ -133,7 +135,7 @@ public class FilmService {
                 throw new IllegalArgumentException("Year should be a valid info in YYYY format");
             }
         }
-        return filmStorage.getPopular(count,genreId, year).stream()
+        return filmStorage.getPopular(count, genreId, year).stream()
                 .filter(Objects::nonNull)
                 .map(FilmMapper::toDto)
                 .toList();
@@ -142,6 +144,8 @@ public class FilmService {
     // ADD-DIRECTOR FEATURE
 
     public Collection<FilmApiDto> getDirectorFilm(Integer id, String sortBy) {
+        if (id == null || id < 1) throw new NotFoundException("Invalid Director Id", id);
+        directorService.findDirectorById(id);
         return filmStorage.getDirectorFilm(id, sortBy).stream()
                 .map(FilmMapper::toDto)
                 .toList();
