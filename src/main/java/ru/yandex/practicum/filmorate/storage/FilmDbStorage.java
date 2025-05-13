@@ -20,7 +20,11 @@ import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
 
 @RequiredArgsConstructor
 @Repository
@@ -178,32 +182,35 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getPopular(Integer count, Long genreId, String year) {
         // ADD-MOST-POPULARS
-        String queryEnd = "GROUP BY f.film_id ORDER BY COUNT(DISTINCT l.user_id) DESC  LIMIT ?;";
-
+        final String QUERY_GROUP = "GROUP BY f.film_id ORDER BY COUNT(DISTINCT l.user_id) DESC  LIMIT ?;";
+        final String QUERY_GENRE_ID =
+                "JOIN film_genres AS fgfilter ON f.film_id = fgfilter.film_id AND fgfilter.genre_id = ? ";
+        final String QUERY_YEAR = "WHERE EXTRACT(YEAR FROM f.release_date) = ? ";
         if (Objects.nonNull(genreId) && Objects.isNull(year)) {
             return jdbc.query(
                     FilmRowMapper.GET_POPULAR_FILMS_QUERY
-                            + "WHERE g.genre_id = ? "
-                            + queryEnd,
+                            + QUERY_GENRE_ID
+                            + QUERY_GROUP,
                     new FilmRowMapper(), genreId, count);
+
         }
         if (Objects.isNull(genreId) && Objects.nonNull(year)) {
             return jdbc.query(
                     FilmRowMapper.GET_POPULAR_FILMS_QUERY
-                            + "WHERE EXTRACT(YEAR FROM f.release_date) = ? "
-                            + queryEnd,
+                            + QUERY_YEAR
+                            + QUERY_GROUP,
                     new FilmRowMapper(), year, count);
         }
         if (Objects.nonNull(genreId) && Objects.nonNull(year)) {
             return jdbc.query(
                     FilmRowMapper.GET_POPULAR_FILMS_QUERY
-                            + "WHERE EXTRACT(YEAR FROM f.release_date) = ? "
-                            + "AND g.genre_id = ? "
-                            + queryEnd,
-                    new FilmRowMapper(), year, genreId, count);
+                            + QUERY_GENRE_ID
+                            + QUERY_YEAR
+                            + QUERY_GROUP,
+                    new FilmRowMapper(),genreId, year, count);
         }
 
-        return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY + queryEnd, new FilmRowMapper(), count);
+        return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY + QUERY_GROUP, new FilmRowMapper(), count);
     }
 
     @Override

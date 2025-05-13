@@ -96,7 +96,7 @@ public class FilmRowMapper implements RowMapper<Film> {
 
     // ADD-MOST-POPULARS
     public static String GET_POPULAR_FILMS_QUERY = """
-            SELECT
+                        SELECT
                 f.film_id AS id,
                 f.name AS name,
                 f.description AS description,
@@ -128,7 +128,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 LEFT JOIN ratings AS r ON f.rating_id = r.rating_id
                 LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id
                 LEFT JOIN directors AS d ON d.director_id = fd.director_id
-            """;
+                """;
 
 
     public static String GET_FILMS_QUERY = """
@@ -408,16 +408,15 @@ public class FilmRowMapper implements RowMapper<Film> {
         if (dbGenres != null && !dbGenres.isBlank()) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-                List<Genre> filmGenresList = objectMapper.readValue(dbGenres, new TypeReference<List<Genre>>() {
+                List<Genre> filmGenresList = objectMapper.readValue(dbGenres,
+                        new TypeReference<List<Genre>>() {
                 });
                 Set<Genre> filmGenresSet = new LinkedHashSet<>(filmGenresList);
                 film.setGenres(filmGenresSet);
             } catch (JsonProcessingException e) {
                 // do nothing
             }
-
         }
-
         //add-directors feature
         String dbDirectors = rs.getString("directors");
         if (dbDirectors != null && !dbDirectors.isBlank()) {
