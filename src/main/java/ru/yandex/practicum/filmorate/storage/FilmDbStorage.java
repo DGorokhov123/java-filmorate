@@ -18,7 +18,6 @@ import ru.yandex.practicum.filmorate.storage.mappers.FilmRowMapper;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Types;
-import java.time.Year;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -183,30 +182,35 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getPopular(Integer count, Long genreId, String year) {
         // ADD-MOST-POPULARS
-        List<Film> films = jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY,
-                new FilmRowMapper(), count);
+        final String QUERY_GROUP = "GROUP BY f.film_id ORDER BY COUNT(DISTINCT l.user_id) DESC  LIMIT ?;";
+        final String QUERY_GENRE_ID =
+                "JOIN film_genres AS fgfilter ON f.film_id = fgfilter.film_id AND fgfilter.genre_id = ? ";
+        final String QUERY_YEAR = "WHERE EXTRACT(YEAR FROM f.release_date) = ? ";
         if (Objects.nonNull(genreId) && Objects.isNull(year)) {
-            return films.stream()
-                    .filter(film ->
-                            film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId)))
-                    .toList();
+            return jdbc.query(
+                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
+                            + QUERY_GENRE_ID
+                            + QUERY_GROUP,
+                    new FilmRowMapper(), genreId, count);
+
         }
         if (Objects.isNull(genreId) && Objects.nonNull(year)) {
-
-            return films.stream()
-                    .filter(film ->
-                            Year.parse(year).equals(Year.of(film.getReleaseDate().getYear())))
-                    .toList();
+            return jdbc.query(
+                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
+                            + QUERY_YEAR
+                            + QUERY_GROUP,
+                    new FilmRowMapper(), year, count);
         }
         if (Objects.nonNull(genreId) && Objects.nonNull(year)) {
-            return films.stream()
-                    .filter(film ->
-                            film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId)))
-                    .filter(film ->
-                            Year.parse(year).equals(Year.of(film.getReleaseDate().getYear())))
-                    .toList();
+            return jdbc.query(
+                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
+                            + QUERY_GENRE_ID
+                            + QUERY_YEAR
+                            + QUERY_GROUP,
+                    new FilmRowMapper(),genreId, year, count);
         }
-        return films;
+
+        return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY + QUERY_GROUP, new FilmRowMapper(), count);
     }
 
     @Override
