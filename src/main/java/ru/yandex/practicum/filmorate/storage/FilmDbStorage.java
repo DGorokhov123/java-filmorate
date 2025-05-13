@@ -18,9 +18,14 @@ import ru.yandex.practicum.filmorate.storage.mappers.FilmRowMapper;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Types;
+import java.time.Year;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
 
 @RequiredArgsConstructor
 @Repository
@@ -181,27 +186,44 @@ public class FilmDbStorage implements FilmStorage {
         String queryEnd = "GROUP BY f.film_id ORDER BY COUNT(DISTINCT l.user_id) DESC  LIMIT ?;";
 
         if (Objects.nonNull(genreId) && Objects.isNull(year)) {
-            return jdbc.query(
-                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
-                            + "WHERE g.genre_id = ? "
-                            + queryEnd,
-                    new FilmRowMapper(), genreId, count);
+//            return jdbc.query(
+//                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
+//                            + "WHERE g.genre_id = ? "
+//                            + queryEnd,
+//                    new FilmRowMapper(), genreId, count);
+            return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY + queryEnd, new FilmRowMapper(), count)
+                    .stream()
+                    .filter(film -> film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId)))
+                    .toList();
         }
         if (Objects.isNull(genreId) && Objects.nonNull(year)) {
-            return jdbc.query(
-                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
-                            + "WHERE EXTRACT(YEAR FROM f.release_date) = ? "
-                            + queryEnd,
-                    new FilmRowMapper(), year, count);
+//            return jdbc.query(
+//                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
+//                            + "WHERE EXTRACT(YEAR FROM f.release_date) = ? "
+//                            + queryEnd,
+//                    new FilmRowMapper(), year, count);
+            return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY + queryEnd, new FilmRowMapper(), count)
+                    .stream()
+                    .filter(film -> Year.parse(year).equals(Year.of(film.getReleaseDate().getYear())))
+                    .toList();
+
         }
         if (Objects.nonNull(genreId) && Objects.nonNull(year)) {
-            return jdbc.query(
-                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
-                            + "WHERE EXTRACT(YEAR FROM f.release_date) = ? "
-                            + "AND g.genre_id = ? "
-                            + queryEnd,
-                    new FilmRowMapper(), year, genreId, count);
+//            return jdbc.query(
+//                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
+//                            + "WHERE EXTRACT(YEAR FROM f.release_date) = ? "
+//                            + "AND g.genre_id = ? "
+//                            + queryEnd,
+//                    new FilmRowMapper(), year, genreId, count);
+
+            return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY + queryEnd, new FilmRowMapper(), count)
+                    .stream()
+                    .filter(film -> film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId)))
+                    .filter(film -> Year.parse(year).equals(Year.of(film.getReleaseDate().getYear())))
+                    .toList();
+
         }
+
 
         return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY + queryEnd, new FilmRowMapper(), count);
     }
