@@ -411,10 +411,10 @@ public class FilmRowMapper implements RowMapper<Film> {
         if (dbGenres != null && !dbGenres.isBlank()) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
-                Set<Genre> filmGenresSet = objectMapper.readValue(dbGenres,
-                        new TypeReference<Set<Genre>>() {
-                        });
-
+                List<Genre> filmGenresList = objectMapper.readValue(dbGenres,
+                        new TypeReference<List<Genre>>() {
+                });
+                Set<Genre> filmGenresSet = new LinkedHashSet<>(filmGenresList);
                 film.setGenres(filmGenresSet);
             } catch (JsonProcessingException e) {
                 // do nothing

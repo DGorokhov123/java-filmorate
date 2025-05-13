@@ -187,19 +187,23 @@ public class FilmDbStorage implements FilmStorage {
                 new FilmRowMapper(), count);
         if (Objects.nonNull(genreId) && Objects.isNull(year)) {
             return films.stream()
-                    .filter(film -> film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId)))
+                    .filter(film ->
+                            film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId)))
                     .toList();
         }
         if (Objects.isNull(genreId) && Objects.nonNull(year)) {
 
             return films.stream()
-                    .filter(film -> Year.parse(year).equals(Year.of(film.getReleaseDate().getYear())))
+                    .filter(film ->
+                            Year.parse(year).equals(Year.of(film.getReleaseDate().getYear())))
                     .toList();
         }
         if (Objects.nonNull(genreId) && Objects.nonNull(year)) {
             return films.stream()
-                    .filter(film -> film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId)))
-                    .filter(film -> Year.parse(year).equals(Year.of(film.getReleaseDate().getYear())))
+                    .filter(film ->
+                            film.getGenres().stream().anyMatch(genre -> genre.getId().equals(genreId)))
+                    .filter(film ->
+                            Year.parse(year).equals(Year.of(film.getReleaseDate().getYear())))
                     .toList();
         }
         return films;
