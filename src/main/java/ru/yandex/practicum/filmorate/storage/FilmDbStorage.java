@@ -119,7 +119,7 @@ public class FilmDbStorage implements FilmStorage {
             throw new NotFoundException("Director Referential integrity error", film);
         }
 
-        return film;
+        return getFilmById(film.getId());
     }
 
     @Override
@@ -158,7 +158,7 @@ public class FilmDbStorage implements FilmStorage {
             throw new NotFoundException("Film referential integrity error", film);
         }
 
-        return film;
+        return getFilmById(film.getId());
     }
 
     @Override
@@ -222,7 +222,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendations(Long userId) {
-        return jdbc.query(FilmRowMapper.GET_RECOMMENDED_FILMS_QUERY, new FilmRowMapper(), userId);
+        return jdbc.query(FilmRowMapper.GET_RECOMMENDED_FILMS_QUERY, new FilmRowMapper(), userId, userId, userId);
     }
 
     @Override

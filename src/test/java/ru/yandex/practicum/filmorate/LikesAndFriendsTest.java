@@ -143,9 +143,9 @@ class LikesAndFriendsTest extends HttpAbstractTest {
         assertTrue(ans.contains("Terminator"));
         assertTrue(ans.contains("Inception"));
 
-        assertTrue(checkDelete("/films/1/like/1", 204, null));
-        assertTrue(checkDelete("/films/1/like/2", 204, null));
-        assertTrue(checkDelete("/films/1/like/3", 204, null));
+        assertTrue(checkDelete("/films/1/like/1", 200, null));
+        assertTrue(checkDelete("/films/1/like/2", 200, null));
+        assertTrue(checkDelete("/films/1/like/3", 200, null));
 
         ans = simpleGet("/films/popular?count=1");
         assertFalse(ans.contains("Anora"));
