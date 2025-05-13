@@ -17,6 +17,7 @@ import ru.yandex.practicum.filmorate.storage.mappers.ReviewUserLikeMapper;
 
 import java.sql.PreparedStatement;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -28,6 +29,9 @@ public class ReviewsDBStorage {
     private final FilmStorage filmStorage;
 
     public Review createReview(Review newReview) {
+
+        userStorage.checkUserById(newReview.getUserId());
+        filmStorage.checkFilmById(newReview.getFilmId());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -95,14 +99,19 @@ public class ReviewsDBStorage {
 
     public Collection<Review> getReviewsByFilmId(Long filmId, int count) {
 
-        filmStorage.checkFilmById(filmId);
-
-        if (filmId == null || filmId == 0) {
-            return jdbc.query(ReviewRowMapper.GET_ALL_REVIEWS_QUERY, new ReviewRowMapper(), count);
+        if (filmId != null || filmId != 0) {
+            return jdbc.query(ReviewRowMapper.GET_REVIEWS_BY_FILM_ID_QUERY, new ReviewRowMapper(), filmId, count);
         }
 
-        return jdbc.query(ReviewRowMapper.GET_REVIEWS_BY_FILM_ID_QUERY, new ReviewRowMapper(), filmId, count);
+        return List.of();
     }
+
+    public Collection<Review> getReviews(int count) {
+
+        return jdbc.query(ReviewRowMapper.GET_ALL_REVIEWS_QUERY, new ReviewRowMapper(), count);
+
+    }
+
 
     public Optional<ReviewUserLike> getUserReaction(Long reviewId, Long userId) {
         userStorage.checkUserById(userId);

@@ -76,17 +76,17 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleRuntimeException(RuntimeException e, HttpServletRequest request) {
-        log.debug("Internal Server Error: {}", e.getMessage());
-        return new ErrorResponse(
-                Instant.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Unexpected " + e.getClass().getSimpleName(),
-                e.getMessage(),
-                request.getRequestURI()
-        );
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse handleRuntimeException(RuntimeException e, HttpServletRequest request) {
+//        log.debug("Internal Server Error: {}", e.getMessage());
+//        return new ErrorResponse(
+//                Instant.now(),
+//                HttpStatus.INTERNAL_SERVER_ERROR,
+//                "Unexpected " + e.getClass().getSimpleName(),
+//                e.getMessage(),
+//                request.getRequestURI()
+//        );
+//    }
 
 }

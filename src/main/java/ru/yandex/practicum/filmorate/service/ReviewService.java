@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.ReviewUserLike;
 import ru.yandex.practicum.filmorate.storage.ReviewsDBStorage;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,8 @@ public class ReviewService {
     private final EventService eventService;
 
     public ReviewApiDto createReview(@Valid ReviewApiDto reviewDTO) {
+
+
         Review review = reviewsStorage.createReview(ReviewMapper.toReview(reviewDTO));
         eventService.addReviewEvent(review.getReviewId(), review.getUserId());
         return ReviewMapper.toReviewApiDto(review,
@@ -40,15 +43,31 @@ public class ReviewService {
 
 
     public ReviewApiDto updateReview(@Valid ReviewApiDto reviewApiDto) {
-        Review review = reviewsStorage.updateReview(ReviewMapper.toReview(reviewApiDto));
+
+        Review reviewToUpdate = reviewsStorage.getReviewById(reviewApiDto.getReviewId());
+
+        reviewToUpdate.setContent(ReviewMapper.toReview(reviewApiDto).getContent());
+        reviewToUpdate.setIsPositive(ReviewMapper.toReview(reviewApiDto).getIsPositive());
+
+        Review review = reviewsStorage.updateReview(reviewToUpdate);
         eventService.updateReviewEvent(review.getReviewId(), review.getUserId());
         return ReviewMapper.toReviewApiDto(review, getReviewUseful(reviewApiDto.getReviewId()));
     }
 
-    public Collection<ReviewApiDto> getReviewByFilmd(Long filmId, Integer count) {
-        return reviewsStorage.getReviewsByFilmId(filmId, count).stream()
+    public Collection<ReviewApiDto> getReviewByFilmId(Long filmId, Integer count) {
+
+        if ((filmId != null)) {
+            return reviewsStorage.getReviewsByFilmId(filmId, count).stream()
+                    .map(review -> ReviewMapper.toReviewApiDto(review, getReviewUseful(review.getReviewId())))
+                    .sorted(Comparator.comparingInt(ReviewApiDto::getUseful).reversed())
+                    .collect(Collectors.toList());
+        }
+
+        return reviewsStorage.getReviews(count).stream()
                 .map(review -> ReviewMapper.toReviewApiDto(review, getReviewUseful(review.getReviewId())))
-                .collect(Collectors.toSet());
+                .sorted(Comparator.comparingInt(ReviewApiDto::getUseful).reversed())
+                .collect(Collectors.toList());
+
     }
 
     public ReviewApiDto deleteReviewById(Long id) {

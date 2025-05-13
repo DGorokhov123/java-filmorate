@@ -26,7 +26,7 @@ public class ReviewRowMapper implements RowMapper<Review> {
 
     public static final String GET_ALL_REVIEWS_QUERY = "SELECT " +
             "review_id, content, is_positive, user_id, film_id " +
-            "FROM REVIEWS LIMIT = ?;";
+            "FROM REVIEWS LIMIT ?;";
 
     public static final String CREATE_USER_REACTION_QUERY =
             "INSERT INTO REVIEWS_REACTIONS (review_id, user_id, reaction) VALUES (?, ?, ?);";
