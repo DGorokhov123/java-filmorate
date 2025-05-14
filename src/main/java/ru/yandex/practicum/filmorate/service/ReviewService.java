@@ -29,8 +29,6 @@ public class ReviewService {
     private final EventService eventService;
 
     public ReviewApiDto createReview(@Valid ReviewApiDto reviewDTO) {
-
-
         Review review = reviewsStorage.createReview(ReviewMapper.toReview(reviewDTO));
         eventService.addReviewEvent(review.getReviewId(), review.getUserId());
         return ReviewMapper.toReviewApiDto(review,
@@ -41,9 +39,7 @@ public class ReviewService {
         return ReviewMapper.toReviewApiDto(reviewsStorage.getReviewById(id), getReviewUseful(id));
     }
 
-
     public ReviewApiDto updateReview(@Valid ReviewApiDto reviewApiDto) {
-
         Review reviewToUpdate = reviewsStorage.getReviewById(reviewApiDto.getReviewId());
 
         reviewToUpdate.setContent(ReviewMapper.toReview(reviewApiDto).getContent());
@@ -55,7 +51,6 @@ public class ReviewService {
     }
 
     public Collection<ReviewApiDto> getReviewByFilmId(Long filmId, Integer count) {
-
         if ((filmId != null)) {
             return reviewsStorage.getReviewsByFilmId(filmId, count).stream()
                     .map(review -> ReviewMapper.toReviewApiDto(review, getReviewUseful(review.getReviewId())))
@@ -67,11 +62,9 @@ public class ReviewService {
                 .map(review -> ReviewMapper.toReviewApiDto(review, getReviewUseful(review.getReviewId())))
                 .sorted(Comparator.comparingInt(ReviewApiDto::getUseful).reversed())
                 .collect(Collectors.toList());
-
     }
 
     public ReviewApiDto deleteReviewById(Long id) {
-
         int useful = getReviewUseful(id);
 
         reviewsStorage.deleteReviewLikes(id); // перед удалением обзора удалить его лайки
@@ -97,7 +90,6 @@ public class ReviewService {
 
         reviewsStorage.addUserReaction(reviewId, userId, USER_LIKE);
 
-
         return ReviewMapper.toReviewApiDto(
                 reviewsStorage.getReviewById(reviewId), getReviewUseful(reviewId));
     }
@@ -118,7 +110,6 @@ public class ReviewService {
         }
 
         reviewsStorage.addUserReaction(reviewId, userId, USER_DISLIKE);
-
 
         return ReviewMapper.toReviewApiDto(
                 reviewsStorage.getReviewById(reviewId), getReviewUseful(reviewId));
@@ -174,17 +165,13 @@ public class ReviewService {
     }
 
     private int getUserReaction(Long id, Long userId) {
-
-
         Optional<ReviewUserLike> userReaction = reviewsStorage.getUserReaction(id, userId);
         if (userReaction.isPresent()) {
             if (userReaction.get().getReaction() >= USER_LIKE_START) { // заложено под развитие
                 return 1;
             } else return -1;
         }
-
         return 0;
     }
-
 
 }

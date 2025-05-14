@@ -57,7 +57,6 @@ public class UserRowMapper implements RowMapper<User> {
 
     public static String REMOVE_FRIEND_QUERY = "DELETE FROM friends WHERE user_id = ? AND friend_id = ?;";
 
-
     @Override
     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
         User user = new User();
@@ -70,7 +69,6 @@ public class UserRowMapper implements RowMapper<User> {
         user.setFollowers(makeLongSet(rs.getArray("followers")));
         return user;
     }
-
 
     private Set<Long> makeLongSet(java.sql.Array sqlArray) throws SQLException {
         if (sqlArray == null) return new HashSet<>();

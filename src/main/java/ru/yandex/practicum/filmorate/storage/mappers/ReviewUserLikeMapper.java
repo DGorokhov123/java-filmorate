@@ -9,7 +9,6 @@ import java.sql.SQLException;
 
 public class ReviewUserLikeMapper implements RowMapper<ReviewUserLike> {
 
-
     @Override
     public ReviewUserLike mapRow(ResultSet rs, int rowNum) throws SQLException {
         ReviewUserLike reviewUserLike = new ReviewUserLike();

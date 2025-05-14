@@ -188,7 +188,6 @@ public class FilmDbStorage implements FilmStorage {
                             + QUERY_GENRE_ID
                             + QUERY_GROUP,
                     new FilmRowMapper(), genreId, count);
-
         }
         if (Objects.isNull(genreId) && Objects.nonNull(year)) {
             return jdbc.query(
@@ -242,6 +241,5 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> findFilmsByTitle(String query) {
         return jdbc.query(FilmRowMapper.SEARCH_FILMS_BY_TITLE_QUERY, new FilmRowMapper(), query.toLowerCase());
     }
-
 
 }

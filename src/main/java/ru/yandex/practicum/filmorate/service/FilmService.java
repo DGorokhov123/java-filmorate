@@ -45,9 +45,7 @@ public class FilmService {
             .register(new FilmDurationValidator())
             .build();
 
-
     // STORAGE OPERATIONS
-
 
     public Collection<FilmApiDto> getFilms() {
         return filmStorage.getFilms().stream()
@@ -94,9 +92,7 @@ public class FilmService {
         return FilmMapper.toDto(newFilm);
     }
 
-
     // LIKES + POPULAR OPERATIONS
-
 
     public void addLike(Long filmId, Long userId) {
         if (filmId == null || filmId < 1) throw new NotFoundException("Invalid Film Id", filmId);
@@ -151,9 +147,7 @@ public class FilmService {
                 .toList();
     }
 
-
     // RECOMMENDATIONS
-
 
     public Collection<FilmApiDto> findRecommendations(Long userId) {
         if (userId == null || userId < 1) throw new IllegalArgumentException("Invalid User Id");
@@ -186,9 +180,7 @@ public class FilmService {
             // Обработка пустого запроса
             return Collections.emptyList();
         }
-
         Set<Film> films = new HashSet<>();
-
 
         if (by == null || by.isBlank()) {
             // По умолчанию ищем только по названию
@@ -214,7 +206,6 @@ public class FilmService {
             throw new IllegalArgumentException("Параметр 'by' может содержать только 'title' или 'director'");
         }
 
-
         if (searchFields.contains("title")) {
             films.addAll(filmStorage.findFilmsByTitle(query));
         }
@@ -228,6 +219,5 @@ public class FilmService {
                 .map(FilmMapper::toDto)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
-
 
 }

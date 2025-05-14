@@ -54,13 +54,11 @@ public class ReviewsDBStorage {
         return newReview;
     }
 
-
     public Review updateReview(Review reviewToUpdate) {
 
         checkAndReturnReviewById(reviewToUpdate.getReviewId());
         userStorage.checkUserById(reviewToUpdate.getUserId());
         filmStorage.checkFilmById(reviewToUpdate.getFilmId());
-
 
         try {
             jdbc.update(ReviewRowMapper.UPDATE_REVIEW_QUERY,
@@ -79,39 +77,28 @@ public class ReviewsDBStorage {
         return checkAndReturnReviewById(id);
     }
 
-
     public Review deleteReviewById(Long reviewId) {
-
         Review review = checkAndReturnReviewById(reviewId);
         jdbc.update(ReviewRowMapper.DELETE_REVIEW_BY_ID_QUERY, reviewId);
-
         return review;
     }
 
     public Review deleteReviewLikes(Long reviewId) {
-
         Review review = checkAndReturnReviewById(reviewId);
         jdbc.update(ReviewRowMapper.DELETE_REVIEW_REACTIONS_QUERY, reviewId);
-
         return review;
     }
 
-
     public Collection<Review> getReviewsByFilmId(Long filmId, int count) {
-
         if (filmId != null || filmId != 0) {
             return jdbc.query(ReviewRowMapper.GET_REVIEWS_BY_FILM_ID_QUERY, new ReviewRowMapper(), filmId, count);
         }
-
         return List.of();
     }
 
     public Collection<Review> getReviews(int count) {
-
         return jdbc.query(ReviewRowMapper.GET_ALL_REVIEWS_QUERY, new ReviewRowMapper(), count);
-
     }
-
 
     public Optional<ReviewUserLike> getUserReaction(Long reviewId, Long userId) {
         userStorage.checkUserById(userId);
@@ -129,25 +116,20 @@ public class ReviewsDBStorage {
     public Collection<ReviewUserLike> getReviewReactions(Long reviewId) {
         checkAndReturnReviewById(reviewId);
         return jdbc.query(ReviewRowMapper.GET_REVIEW_REACTIONS_QUERY, new ReviewUserLikeMapper(), reviewId);
-
     }
-
 
     public void addUserReaction(Long reviewId, Long userId, int userReaction) {
         userStorage.checkUserById(userId);
         checkAndReturnReviewById(reviewId);
 
         jdbc.update(ReviewRowMapper.CREATE_USER_REACTION_QUERY, reviewId, userId, userReaction);
-
     }
-
 
     public void deleteUserReaction(Long reviewId, Long userId) {
         userStorage.checkUserById(userId);
         checkAndReturnReviewById(reviewId);
 
         jdbc.update(ReviewRowMapper.DELETE_USER_REACTION_QUERY, reviewId, userId);
-
     }
 
     Review checkAndReturnReviewById(Long id) {
@@ -157,4 +139,5 @@ public class ReviewsDBStorage {
             throw new NotFoundException("Review not found", id);
         }
     }
+
 }

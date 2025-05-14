@@ -23,7 +23,6 @@ public class EventService {
     private final EventDbStorage eventDbStorage;
     private final UserStorage userStorage;
 
-
     public List<EventApiDto> getFeed(Long id) {
         if (id == null || id < 1) throw new IllegalArgumentException("Invalid User id");
         userStorage.checkUserById(id);
@@ -33,9 +32,7 @@ public class EventService {
                 .toList();
     }
 
-
     // FRIENDS OPERATIONS
-
 
     public void addFriendEvent(Long userId, Long friendId) {
         Event event = makeEvent(userId, friendId, EventType.FRIEND, OperationType.ADD);
@@ -49,9 +46,7 @@ public class EventService {
         log.trace("Added [REMOVE FRIEND] event to userId = {},  friendId =  {}", userId, friendId);
     }
 
-
     // LIKES OPERATIONS
-
 
     public void addLikeEvent(Long filmId, Long userId) {
         Event event = makeEvent(userId, filmId, EventType.LIKE, OperationType.ADD);
@@ -65,9 +60,7 @@ public class EventService {
         log.trace("Added [REMOVE LIKE] event to filmId = {},  userId =  {}", filmId, userId);
     }
 
-
     // REVIEW OPERATIONS
-
 
     public void addReviewEvent(Long reviewId, Long userId) {
         Event event = makeEvent(userId, reviewId, EventType.REVIEW, OperationType.ADD);
@@ -96,6 +89,5 @@ public class EventService {
         event.setTimestamp(OffsetDateTime.now());
         return event;
     }
-
 
 }

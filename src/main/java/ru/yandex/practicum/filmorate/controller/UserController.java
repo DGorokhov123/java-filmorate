@@ -23,9 +23,7 @@ public class UserController {
     private final FilmService filmService;
     private final EventService eventService;
 
-
     // STORAGE OPERATIONS
-
 
     @GetMapping
     public Collection<UserApiDto> getUsers() {
@@ -52,9 +50,7 @@ public class UserController {
         return userService.updateUser(user);
     }
 
-
     // FRIENDS OPERATIONS
-
 
     @PutMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -80,18 +76,14 @@ public class UserController {
         return userService.findMutualFriends(userId, otherId);
     }
 
-
     // RECOMMENDATIONS
-
 
     @GetMapping("/{userId}/recommendations")
     public Collection<FilmApiDto> findRecommendations(@PathVariable Long userId) {
         return filmService.findRecommendations(userId);
     }
 
-
     // FEED
-
 
     @GetMapping("/{userId}/feed")
     public Collection<EventApiDto> getFeed(@PathVariable Long userId) {

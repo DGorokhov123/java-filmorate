@@ -41,9 +41,7 @@ public class UserService {
     private final UserStorage userStorage;
     private final EventService eventService;
 
-
     // STORAGE OPERATIONS
-
 
     public Collection<UserApiDto> getUsers() {
         return userStorage.getUsers().stream()
@@ -84,9 +82,7 @@ public class UserService {
         return UserMapper.toDto(newUser);
     }
 
-
     // FRIENDS OPERATIONS
-
 
     public void addFriend(Long id1, Long id2) {
         if (id1 == null || id1 < 1) throw new NotFoundException("Invalid User id", id1);

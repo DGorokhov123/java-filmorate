@@ -16,9 +16,7 @@ public class FilmController {
 
     private final FilmService filmService;
 
-
     // STORAGE OPERATIONS
-
 
     @GetMapping
     public Collection<FilmApiDto> getFilms() {
@@ -45,9 +43,7 @@ public class FilmController {
         return filmService.updateFilm(film);
     }
 
-
     // LIKES + POPULAR OPERATIONS
-
 
     @PutMapping("/{filmId}/like/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -60,7 +56,6 @@ public class FilmController {
     public void removeLike(@PathVariable Long filmId, @PathVariable Long userId) {
         filmService.removeLike(filmId, userId);
     }
-
 
     // ADD-MOST-POPULARS
     // GET /films/popular?count={limit}&genreId={genreId}&year={year}
@@ -78,7 +73,6 @@ public class FilmController {
                                                   @RequestParam(value = "sortBy",
                                                           defaultValue = "year", required = false) String sortBy) {
         return filmService.getDirectorFilm(id, sortBy);
-
     }
 
     // SEARCH
@@ -89,7 +83,6 @@ public class FilmController {
             @RequestParam String by) {
         return filmService.searchFilms(query, by);
     }
-
 
     @GetMapping("/common")
     public Collection<FilmApiDto> getCommonFilms(@RequestParam() Long userId,

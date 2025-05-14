@@ -93,7 +93,6 @@ public class FilmRowMapper implements RowMapper<Film> {
             ORDER BY score DESC
             """;
 
-
     // ADD-MOST-POPULARS
     public static String GET_POPULAR_FILMS_QUERY = """
                     SELECT
@@ -129,7 +128,6 @@ public class FilmRowMapper implements RowMapper<Film> {
             LEFT JOIN film_directors AS fd ON f.film_id = fd.film_id
             LEFT JOIN directors AS d ON d.director_id = fd.director_id
             """;
-
 
     public static String GET_FILMS_QUERY = """
             SELECT
@@ -254,7 +252,6 @@ public class FilmRowMapper implements RowMapper<Film> {
             WHERE film_id = ? AND user_id = ?;
             """;
 
-
     // add-director feature
     public static String ADD_FILM_DIRECTOR_QUERY = """
             INSERT INTO film_directors (film_id, director_id) VALUES (?, ?);
@@ -337,7 +334,6 @@ public class FilmRowMapper implements RowMapper<Film> {
             WHERE LOWER(f.name) LIKE CONCAT('%', ?, '%')
             GROUP BY f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name
             """;
-
 
     public static String SEARCH_FILMS_BY_DIRECTOR_QUERY = """
               SELECT
@@ -433,10 +429,8 @@ public class FilmRowMapper implements RowMapper<Film> {
             }
 
         }
-
         return film;
     }
-
 
     private Set<Long> makeLongSet(java.sql.Array sqlArray) throws SQLException {
         if (sqlArray == null) return new HashSet<>();
@@ -446,6 +440,5 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .map(o -> ((Number) o).longValue())
                 .collect(Collectors.toSet());
     }
-
 
 }
