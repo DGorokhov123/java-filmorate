@@ -12,6 +12,9 @@ public class FilmMapper {
         dto.setMpa(film.getMpa());
         dto.setGenres(film.getGenres());
         dto.setLikes(film.getLikes());
+
+        //add-director feature
+        dto.setDirectors(film.getDirectors());
         return dto;
     }
 
@@ -25,6 +28,9 @@ public class FilmMapper {
         film.setMpa(dto.getMpa());
         film.setGenres(dto.getGenres());
         film.setLikes(dto.getLikes());
+
+        //add-director feature
+        film.setDirectors(dto.getDirectors());
         return film;
     }
 

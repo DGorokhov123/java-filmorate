@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.controller.serializers.DurationSerializer;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
@@ -31,6 +32,8 @@ public class FilmApiDto {
 
     private Rating mpa;
 
-    private Set<Genre> genres = new HashSet<>();
+    private Set<Genre> genres = new LinkedHashSet<>();
 
+    //add-director feature
+    private Set<Director> directors = new LinkedHashSet<>();
 }

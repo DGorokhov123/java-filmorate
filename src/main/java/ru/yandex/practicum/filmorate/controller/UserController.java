@@ -4,10 +4,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.EventApiDto;
+import ru.yandex.practicum.filmorate.model.FilmApiDto;
 import ru.yandex.practicum.filmorate.model.UserApiDto;
+import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 @RestController
 @RequestMapping("/users")
@@ -15,10 +20,10 @@ import java.util.Collection;
 public class UserController {
 
     private final UserService userService;
-
+    private final FilmService filmService;
+    private final EventService eventService;
 
     // STORAGE OPERATIONS
-
 
     @GetMapping
     public Collection<UserApiDto> getUsers() {
@@ -45,9 +50,7 @@ public class UserController {
         return userService.updateUser(user);
     }
 
-
     // FRIENDS OPERATIONS
-
 
     @PutMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -63,12 +66,28 @@ public class UserController {
 
     @GetMapping("/{userId}/friends")
     public Collection<UserApiDto> findFriends(@PathVariable Long userId) {
-        return userService.findFriends(userId);
+        return userService.findFriends(userId).stream()
+                .sorted(Comparator.comparing(UserApiDto::getId))
+                .toList();
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
     public Collection<UserApiDto> findMutualFriends(@PathVariable Long userId, @PathVariable Long otherId) {
         return userService.findMutualFriends(userId, otherId);
+    }
+
+    // RECOMMENDATIONS
+
+    @GetMapping("/{userId}/recommendations")
+    public Collection<FilmApiDto> findRecommendations(@PathVariable Long userId) {
+        return filmService.findRecommendations(userId);
+    }
+
+    // FEED
+
+    @GetMapping("/{userId}/feed")
+    public Collection<EventApiDto> getFeed(@PathVariable Long userId) {
+        return eventService.getFeed(userId);
     }
 
 }

@@ -69,5 +69,4 @@ public class GenreService {
         return genreDBStorage.getGenreByIdCSV(idList);
     }
 
-
 }

@@ -69,15 +69,41 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopular(Integer count) {
+    public List<Film> getPopular(Integer count, Long genreId, String year) {
         return getFilms().stream()
                 .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
                 .limit(count)
                 .toList();
     }
 
+    @Override
+    public List<Film> getRecommendations(Long userId) {
+        return List.of();
+    }
+
+    @Override
+    public Collection<Long> getFilmLikesByUserId(Long userId) {
+        return List.of();
+    }
+
+    @Override
+    public Collection<Film> findFilmsByDirector(String query) {
+        return List.of();
+    }
+
+    @Override
+    public Collection<Film> findFilmsByTitle(String query) {
+        return List.of();
+    }
+
     private Long getNextId() {
         return films.keySet().stream().mapToLong(id -> id).max().orElse(0) + 1;
+    }
+
+    //add-director feature
+    @Override
+    public Collection<Film> getDirectorFilm(Integer id, String sortBy) {
+        return null;
     }
 
 }
