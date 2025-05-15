@@ -162,9 +162,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void addLike(Long filmId, Long userId) {
+    public void addLike(Long filmId, Long userId, Integer mark) {
         try {
-            jdbc.update(FilmRowMapper.ADD_LIKE_QUERY, filmId, userId);
+            jdbc.update(FilmRowMapper.ADD_LIKE_QUERY, filmId, userId, mark);
         } catch (DuplicateKeyException e) {
             // do nothing
         }
