@@ -57,6 +57,12 @@ public class FilmController {
         filmService.removeLike(filmId, userId);
     }
 
+    @PutMapping("/{filmId}/like/{userId}/{mark}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addMark(@PathVariable Long filmId, @PathVariable Long userId, @PathVariable Integer mark) {
+        filmService.addLike(filmId, userId, mark);
+    }
+
     // ADD-MOST-POPULARS
     // GET /films/popular?count={limit}&genreId={genreId}&year={year}
     @GetMapping("/popular")

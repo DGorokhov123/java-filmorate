@@ -95,13 +95,18 @@ public class FilmService {
     // LIKES + POPULAR OPERATIONS
 
     public void addLike(Long filmId, Long userId) {
+        addLike(filmId, userId, 6);
+    }
+
+    public void addLike(Long filmId, Long userId, Integer mark) {
         if (filmId == null || filmId < 1) throw new NotFoundException("Invalid Film Id", filmId);
         if (userId == null || userId < 1) throw new NotFoundException("Invalid User Id", userId);
+        if (mark == null || mark < 1 || mark > 10) throw new IllegalArgumentException("Invalid Mark value");
         userStorage.checkUserById(userId);
         filmStorage.checkFilmById(filmId);
-        filmStorage.addLike(filmId, userId);
+        filmStorage.addLike(filmId, userId, mark);
         eventService.addLikeEvent(filmId, userId);
-        log.debug("Added like to film {} by user {}", filmId, userId);
+        log.debug("Added mark {} to film {} by user {}", mark, filmId, userId);
     }
 
     public void removeLike(Long filmId, Long userId) {
@@ -111,7 +116,7 @@ public class FilmService {
         filmStorage.checkFilmById(filmId);
         filmStorage.removeLike(filmId, userId);
         eventService.removeLikeEvent(filmId, userId);
-        log.debug("Removed like from film {} by user {}", filmId, userId);
+        log.debug("Removed mark from film {} by user {}", filmId, userId);
     }
 
     public List<FilmApiDto> getPopular(Integer count, Long genreId, String year) {
