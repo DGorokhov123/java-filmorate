@@ -15,6 +15,8 @@ public class FilmMapper {
 
         //add-director feature
         dto.setDirectors(film.getDirectors());
+        // add-marks
+        dto.setRate(film.getRate());
         return dto;
     }
 
@@ -31,6 +33,8 @@ public class FilmMapper {
 
         //add-director feature
         film.setDirectors(dto.getDirectors());
+        // add-marks
+        film.setRate(dto.getRate());
         return film;
     }
 

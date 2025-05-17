@@ -61,6 +61,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.duration AS duration,
                 f.rating_id AS rating_id,
                 r.name AS rating_name,
+                AVG(l.mark) AS rate,
                 ARRAY_AGG(DISTINCT l2.user_id) AS likes,
                 CAST(
                   JSON_ARRAYAGG(
@@ -103,6 +104,7 @@ public class FilmRowMapper implements RowMapper<Film> {
             f.duration AS duration,
             f.rating_id AS rating_id,
             r.name AS rating_name,
+            AVG(l.mark) AS rate,
             ARRAY_AGG(DISTINCT l.user_id) AS likes,
             CAST(
                 JSON_ARRAYAGG(
@@ -138,6 +140,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.duration AS duration,
                 f.rating_id AS rating_id,
                 r.name AS rating_name,
+                AVG(l.mark) AS rate,
                 ARRAY_AGG(DISTINCT l.user_id) AS likes,
                 CAST(
                     JSON_ARRAYAGG(
@@ -174,6 +177,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.duration AS duration,
                 f.rating_id AS rating_id,
                 r.name AS rating_name,
+                AVG(l.mark) AS rate,
                 ARRAY_AGG(DISTINCT l.user_id) AS likes,
                 CAST(
                     JSON_ARRAYAGG(
@@ -211,6 +215,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.duration AS duration,
                 NULL AS rating_id,
                 NULL AS rating_name,
+                NULL AS rate,
                 NULL AS likes,
                 NULL AS genres,
                 NULL AS directors
@@ -243,8 +248,8 @@ public class FilmRowMapper implements RowMapper<Film> {
             """;
 
     public static String ADD_LIKE_QUERY = """
-            INSERT INTO likes (film_id, user_id)
-            VALUES (?, ?);
+            INSERT INTO likes (film_id, user_id, mark)
+            VALUES (?, ?, ?);
             """;
 
     public static String REMOVE_LIKE_QUERY = """
@@ -270,6 +275,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.duration AS duration,
                 f.rating_id AS rating_id,
                 r.name AS rating_name,
+                AVG(l.mark) AS rate,
                 ARRAY_AGG(DISTINCT l.user_id) AS likes,
                 CAST(
                     JSON_ARRAYAGG(
@@ -307,6 +313,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.duration AS duration,
                 f.rating_id AS rating_id,
                 r.name AS rating_name,
+                AVG(l.mark) AS rate,
                 ARRAY_AGG(DISTINCT l.user_id) AS likes,
                 CAST(
                         JSON_ARRAYAGG(
@@ -344,6 +351,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 f.duration AS duration,
                 f.rating_id AS rating_id,
                 r.name AS rating_name,
+                AVG(l.mark) AS rate,
                 ARRAY_AGG(DISTINCT l.user_id) AS likes,
                 CAST(
                         JSON_ARRAYAGG(
@@ -397,6 +405,8 @@ public class FilmRowMapper implements RowMapper<Film> {
             filmRating.setName(rs.getString("rating_name"));
             film.setMpa(filmRating);
         }
+
+        film.setRate(rs.getDouble("rate"));
 
         film.setLikes(makeLongSet(rs.getArray("likes")));
 

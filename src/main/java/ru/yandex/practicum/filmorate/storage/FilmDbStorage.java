@@ -162,9 +162,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void addLike(Long filmId, Long userId) {
+    public void addLike(Long filmId, Long userId, Double mark) {
         try {
-            jdbc.update(FilmRowMapper.ADD_LIKE_QUERY, filmId, userId);
+            jdbc.update(FilmRowMapper.ADD_LIKE_QUERY, filmId, userId, mark);
         } catch (DuplicateKeyException e) {
             // do nothing
         }
@@ -178,48 +178,30 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getPopular(Integer count, Long genreId, String year) {
         // ADD-MOST-POPULARS
-        final String QUERY_GROUP = "GROUP BY f.film_id ORDER BY COUNT(DISTINCT l.user_id) DESC  LIMIT ?;";
-        final String QUERY_GENRE_ID =
-                "JOIN film_genres AS fgfilter ON f.film_id = fgfilter.film_id AND fgfilter.genre_id = ? ";
-        final String QUERY_YEAR = "WHERE EXTRACT(YEAR FROM f.release_date) = ? ";
-        if (Objects.nonNull(genreId) && Objects.isNull(year)) {
-            return jdbc.query(
-                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
-                            + QUERY_GENRE_ID
-                            + QUERY_GROUP,
-                    new FilmRowMapper(), genreId, count);
-        }
-        if (Objects.isNull(genreId) && Objects.nonNull(year)) {
-            return jdbc.query(
-                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
-                            + QUERY_YEAR
-                            + QUERY_GROUP,
-                    new FilmRowMapper(), year, count);
-        }
-        if (Objects.nonNull(genreId) && Objects.nonNull(year)) {
-            return jdbc.query(
-                    FilmRowMapper.GET_POPULAR_FILMS_QUERY
-                            + QUERY_GENRE_ID
-                            + QUERY_YEAR
-                            + QUERY_GROUP,
-                    new FilmRowMapper(), genreId, year, count);
-        }
-
-        return jdbc.query(FilmRowMapper.GET_POPULAR_FILMS_QUERY + QUERY_GROUP, new FilmRowMapper(), count);
+        String query = FilmRowMapper.GET_POPULAR_FILMS_QUERY;
+        if (genreId != null) query = query
+                + " JOIN film_genres AS fgfilter ON f.film_id = fgfilter.film_id AND fgfilter.genre_id = " + genreId;
+        if (year != null) query = query + " WHERE EXTRACT(YEAR FROM f.release_date) = " + year;
+        query = query + " GROUP BY f.film_id ORDER BY rate DESC ";
+        if (count != null) query = query + " LIMIT " + count;
+        return jdbc.query(query, new FilmRowMapper());
     }
 
     @Override
     public Collection<Film> getDirectorFilm(Integer id, String sortBy) {
+        String sqlOrderBy = " ORDER BY id ASC ";
         switch (sortBy) {
             case "year":
-                sortBy = "ORDER BY EXTRACT(YEAR FROM f.release_date) ASC;";
+                sqlOrderBy = " ORDER BY EXTRACT(YEAR FROM f.release_date) ASC ";
                 break;
             case "likes":
-                sortBy = "ORDER BY COUNT( DISTINCT l.user_id) DESC;";
+                sqlOrderBy = " ORDER BY COUNT( DISTINCT l.user_id) DESC ";
+                break;
+            case "rate":
+                sqlOrderBy = " ORDER BY rate DESC ";
                 break;
         }
-        return jdbc.query(FilmRowMapper.GET_FILMS_WITH_DIRECTORS_QUERY + sortBy,
-                new FilmRowMapper(), id);
+        return jdbc.query(FilmRowMapper.GET_FILMS_WITH_DIRECTORS_QUERY + sqlOrderBy, new FilmRowMapper(), id);
     }
 
     @Override

@@ -19,7 +19,7 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    void addLike(Long filmId, Long userId);
+    void addLike(Long filmId, Long userId, Double mark);
 
     void removeLike(Long filmId, Long userId);
 
