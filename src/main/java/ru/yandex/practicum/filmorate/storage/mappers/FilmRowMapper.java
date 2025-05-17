@@ -406,7 +406,7 @@ public class FilmRowMapper implements RowMapper<Film> {
             film.setMpa(filmRating);
         }
 
-        film.setRate(rs.getInt("rate"));
+        film.setRate(rs.getDouble("rate"));
 
         film.setLikes(makeLongSet(rs.getArray("likes")));
 

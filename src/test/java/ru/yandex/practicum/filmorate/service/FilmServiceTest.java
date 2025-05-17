@@ -99,9 +99,9 @@ class FilmServiceTest {
         assertEquals("Terminator", names.get(1));
         assertEquals("Titanic", names.get(2));
 
-        filmService.addLike(3L, 1L);
-        filmService.addLike(3L, 2L);
-        filmService.addLike(2L, 1L);
+        filmService.addLike(3L, 1L, 6.0);
+        filmService.addLike(3L, 2L, 6.2);
+        filmService.addLike(2L, 1L, 6.0);
 
         Collection<FilmApiDto> popular = filmService.getPopular(1000, null, null);
         List<String> popularNames = popular.stream().filter(Objects::nonNull).map(FilmApiDto::getName).toList();

@@ -24,6 +24,6 @@ public class Film {
     private Set<Director> directors = new LinkedHashSet<>();
 
     // add-marks
-    private Integer rate;
+    private Double rate;
 
 }
