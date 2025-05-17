@@ -95,10 +95,10 @@ public class FilmService {
     // LIKES + POPULAR OPERATIONS
 
     public void addLike(Long filmId, Long userId) {
-        addLike(filmId, userId, 6);
+        addLike(filmId, userId, 6.0);
     }
 
-    public void addLike(Long filmId, Long userId, Integer mark) {
+    public void addLike(Long filmId, Long userId, Double mark) {
         if (filmId == null || filmId < 1) throw new NotFoundException("Invalid Film Id", filmId);
         if (userId == null || userId < 1) throw new NotFoundException("Invalid User Id", userId);
         if (mark == null || mark < 1 || mark > 10) throw new IllegalArgumentException("Invalid Mark value");
@@ -120,14 +120,12 @@ public class FilmService {
     }
 
     public List<FilmApiDto> getPopular(Integer count, Long genreId, String year) {
-        // ADD-MOST-POPULARS
-        // проверка на корректность ввода genreId - положительное, не нулевое число
+        // проверка count
+        if (Objects.nonNull(count) && count < 0) throw new IllegalArgumentException("count should be a positive integer number");
+        // проверка genreId
+        if (Objects.nonNull(genreId) && genreId < 0) throw new IllegalArgumentException("genreId should be a positive integer number");
+        // проверка year
         final Year FIRST_FILM_RELEASE_YEAR = Year.of(1985);
-        if (count == null || count < 0) throw new IllegalArgumentException("count should be a positive integer number");
-        if (Objects.nonNull(genreId) && (genreId < 1))
-            throw new IllegalArgumentException("genreId should be a positive integer number, not zero");
-        // проверка на корректность ввода year - корректный формат года, большего или равного 1985
-        // по условиям ТЗ - дата релиза фильмов не раньше 28 декабря 1895 года;
         if (Objects.nonNull(year)) {
             try {
                 if (Year.parse(year).isBefore(FIRST_FILM_RELEASE_YEAR))
@@ -148,6 +146,7 @@ public class FilmService {
         if (id == null || id < 1) throw new NotFoundException("Invalid Director Id", id);
         directorService.findDirectorById(id);
         return filmStorage.getDirectorFilm(id, sortBy).stream()
+                .filter(Objects::nonNull)
                 .map(FilmMapper::toDto)
                 .toList();
     }

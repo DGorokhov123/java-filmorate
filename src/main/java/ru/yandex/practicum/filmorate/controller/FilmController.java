@@ -59,25 +59,28 @@ public class FilmController {
 
     @PutMapping("/{filmId}/like/{userId}/{mark}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addMark(@PathVariable Long filmId, @PathVariable Long userId, @PathVariable Integer mark) {
+    public void addMark(@PathVariable Long filmId, @PathVariable Long userId, @PathVariable Double mark) {
         filmService.addLike(filmId, userId, mark);
     }
 
     // ADD-MOST-POPULARS
     // GET /films/popular?count={limit}&genreId={genreId}&year={year}
     @GetMapping("/popular")
-    public Collection<FilmApiDto> getPopular(@RequestParam(defaultValue = "10") Integer count,
-                                             @RequestParam(required = false) Long genreId,
-                                             @RequestParam(required = false) String year) {
+    public Collection<FilmApiDto> getPopular(
+            @RequestParam(required = false) Integer count,
+            @RequestParam(required = false) Long genreId,
+            @RequestParam(required = false) String year
+    ) {
         return filmService.getPopular(count, genreId, year);
     }
 
     // ADD-DIRECTOR FEATURE
     // GET /films/director/{directorId}?sortBy=[year,likes]
     @GetMapping("/director/{directorId}")
-    public Collection<FilmApiDto> getDirectorFilm(@PathVariable("directorId") Integer id,
-                                                  @RequestParam(value = "sortBy",
-                                                          defaultValue = "year", required = false) String sortBy) {
+    public Collection<FilmApiDto> getDirectorFilm(
+            @PathVariable("directorId") Integer id,
+            @RequestParam(value = "sortBy", defaultValue = "year", required = false) String sortBy
+    ) {
         return filmService.getDirectorFilm(id, sortBy);
     }
 
