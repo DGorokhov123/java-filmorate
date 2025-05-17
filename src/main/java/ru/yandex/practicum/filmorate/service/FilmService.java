@@ -121,9 +121,11 @@ public class FilmService {
 
     public List<FilmApiDto> getPopular(Integer count, Long genreId, String year) {
         // проверка count
-        if (Objects.nonNull(count) && count < 0) throw new IllegalArgumentException("count should be a positive integer number");
+        if (Objects.nonNull(count) && count < 0)
+            throw new IllegalArgumentException("count should be a positive integer number");
         // проверка genreId
-        if (Objects.nonNull(genreId) && genreId < 0) throw new IllegalArgumentException("genreId should be a positive integer number");
+        if (Objects.nonNull(genreId) && genreId < 0)
+            throw new IllegalArgumentException("genreId should be a positive integer number");
         // проверка year
         final Year FIRST_FILM_RELEASE_YEAR = Year.of(1985);
         if (Objects.nonNull(year)) {
